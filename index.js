@@ -1,12 +1,13 @@
 
 function draw(){
-	ball_vx = 5;
-	ball_vy = 5;
-	speed = 80;
+	ball_vx = 3;
+	ball_vy = 3;
+	speed = 50;
 	vertical = "down";
 	horizontal = "right";
+	
 	bricks = computeBrickPositions(ctx, left, offset, numRows, numBricks, brick.width, brick.height);
-	setInterval(()=>{
+	intervalId = setInterval(()=>{
 	function redraw(){
 		
 	    	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -14,7 +15,7 @@ function draw(){
 		drawBricks(ctx, bricks);
 		paddle.draw(ctx);
 		ball.draw(ctx);
-		
+		points.draw(ctx);
 		
 		if(vertical == "down")
 			ball.y += ball_vy;
@@ -37,24 +38,40 @@ function draw(){
 		if(ball.x <= 0) horizontal = "right";
 		if(ball.x >= canvas.width) horizontal = "left";
 		if(ball.y <= 0) vertical = "down";
-		if(ball.y >= canvas.height) horizontal = "up";
+		if(ball.y >= canvas.height) status = "over";
+		
 		// collision with brick wall
 		for(i = 0; i< bricks.length;i++)
 		{
-			if((ball.x > bricks[i].left) && 
+			if(((ball.x+ball.radius) > bricks[i].left) && 
 			    ((ball.x+ball.radius/2) < (bricks[i].left+bricks[i].width)) &&
 			    (ball.y - ball.radius/2) < bricks[i].top)
 			{
 				bricks.splice(i, 1); 
-				vertical = "down";
-				break;	
+				if(vertical == "down") vertical = "up";
+				else vertical = "down";
+				switch(bricks[i].color)
+				{
+				case "yellow":
+					points.add(1);
+					break;	
+				case "green":
+					points.add(3);
+					break;
+				case "orange":
+					points.add(5);
+					break;
+				case "red":
+					points.add(7);
+					break;
+				}
 			}
 			
 		};
 	}
-	window.requestAnimationFrame(redraw);
+	redraw();
 	}, speed);
-
+	return intervalId;
 };
 function drawBricks(ctx, bricks){
 	bricks.forEach((brick)=>
@@ -129,11 +146,31 @@ const ball = {
     ctx.fill();
   }
 };
-draw();
+const points ={
+	value : 0,
+	add(x){
+		this.value += x;
+	},
+	draw(ctx){
+		ctx.font = "30px Arial";
+		ctx.fillText(this.value, 30, 30);
+	}	
+}
+
+
+intervalId = draw();
+
 window.addEventListener('keydown', (e)=>
 {
     console.log(e.key);
     switch(e.key){
+        case "d": 
+    	    paddle.x += 5;
+    	    break;
+	case "a": 
+    	    paddle.x -= 5;
+    	    break;
+
     	case "ArrowRight": 
     	    paddle.x += 5;
     	    break;
