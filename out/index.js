@@ -5,7 +5,7 @@ class Observable {
         this.speed = 80;
     }
     loop() {
-        this.sprites.forEach(spr => spr.update());
+        setInterval(() => this.sprites.forEach(spr => spr.update()), this.speed);
     }
     attach(sprite) {
         this.sprites.push(sprite);
@@ -18,77 +18,82 @@ class Observable {
         }
     }
 }
-function draw(canvas, ball, paddle, bricks, points) {
+/*function draw(canvas: HTMLCanvasElement, ball : Ball, paddle : Paddle, bricks: Array<Brick>,
+    points:Points){
     let ball_vx = 3;
     let ball_vy = 3;
     let speed = 50;
     let vertical = "down";
     let horizontal = "right";
-    let ctx = canvas.getContext('2d');
-    let intervalId = setInterval(() => {
-        function redraw() {
+    let ctx : CanvasRenderingContext2D = canvas.getContext('2d');
+    
+    let intervalId = setInterval(()=>{
+    function redraw(){
+        
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBricks(ctx, bricks);
-            paddle.draw(ctx);
-            ball.draw(ctx);
-            points.draw(ctx);
-            if (vertical == "down")
-                ball.y += ball_vy;
-            else if (vertical == "up")
-                ball.y -= ball_vy;
-            if (horizontal == "left")
-                ball.x -= ball_vx;
-            else if (horizontal == "right")
-                ball.x += ball_vx;
-            // collisions
-            // collision with paddle
-            if (((ball.x + ball.radius / 2) > paddle.x && ((ball.x - ball.radius / 2) < (paddle.x + paddle.width))
-                && (ball.y + ball.radius / 2 > paddle.y))) {
-                console.log("collision");
-                vertical = "up";
-            }
-            // collision with boundaries
-            if (ball.x <= 0)
-                horizontal = "right";
-            if (ball.x >= canvas.width)
-                horizontal = "left";
-            if (ball.y <= 0)
-                vertical = "down";
-            if (ball.y >= canvas.height)
-                status = "over";
-            // collision with brick wall
-            for (let i = 0; i < bricks.length; i++) {
-                if (((ball.x + ball.radius) > bricks[i].left) &&
-                    ((ball.x + ball.radius / 2) < (bricks[i].left + bricks[i].width)) &&
-                    (ball.y - ball.radius / 2) < bricks[i].top) {
-                    bricks.splice(i, 1);
-                    if (vertical == "down")
-                        vertical = "up";
-                    else
-                        vertical = "down";
-                    switch (bricks[i].color) {
-                        case "yellow":
-                            points.add(1);
-                            break;
-                        case "green":
-                            points.add(3);
-                            break;
-                        case "orange":
-                            points.add(5);
-                            break;
-                        case "red":
-                            points.add(7);
-                            break;
-                    }
+        
+        drawBricks(ctx, bricks);
+        paddle.draw(ctx);
+        ball.draw(ctx);
+        points.draw(ctx);
+        
+        if(vertical == "down")
+            ball.y += ball_vy;
+        else if(vertical == "up")
+            ball.y -= ball_vy;
+                
+        if(horizontal == "left")
+            ball.x -= ball_vx;
+        else if(horizontal == "right")
+            ball.x += ball_vx;
+        // collisions
+        // collision with paddle
+        if(((ball.x + ball.radius/2) > paddle.x && ((ball.x-ball.radius/2) < (paddle.x+paddle.width))
+            && (ball.y + ball.radius/2 > paddle.y)))
+        {
+            console.log("collision");
+            vertical ="up";
+        }
+        // collision with boundaries
+        if(ball.x <= 0) horizontal = "right";
+        if(ball.x >= canvas.width) horizontal = "left";
+        if(ball.y <= 0) vertical = "down";
+        if(ball.y >= canvas.height) status = "over";
+        
+        // collision with brick wall
+        for(let i = 0; i< bricks.length;i++)
+        {
+            if(((ball.x+ball.radius) > bricks[i].left) &&
+                ((ball.x+ball.radius/2) < (bricks[i].left+bricks[i].width)) &&
+                (ball.y - ball.radius/2) < bricks[i].top)
+            {
+                bricks.splice(i, 1);
+                if(vertical == "down") vertical = "up";
+                else vertical = "down";
+                switch(bricks[i].color)
+                {
+                case "yellow":
+                    points.add(1);
+                    break;
+                case "green":
+                    points.add(3);
+                    break;
+                case "orange":
+                    points.add(5);
+                    break;
+                case "red":
+                    points.add(7);
+                    break;
                 }
             }
-            ;
-        }
-        redraw();
+            
+        };
+    }
+    redraw();
     }, speed);
     return intervalId;
-}
-;
+};
+*/
 function drawBricks(ctx, bricks) {
     bricks.forEach((brick) => {
         drawBorder(ctx, brick.left, brick.top, brick.width, brick.height);
@@ -101,6 +106,7 @@ function computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numB
     let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow'];
     for (let j = 0; j < numRows; j++) {
         let tmp_left = left;
+        console.log(tmp_left);
         for (let i = 0; i < numBricks; i++) {
             let new_brick = new Brick(canvas);
             tmp_left = tmp_left + new_brick.width;
@@ -178,17 +184,18 @@ class Game {
         this.vertical = "down";
         this.horizontal = "right";
         this.canvas = canvas;
-    }
-    ;
-    update() {
         this.numBricks = 25;
         this.numRows = 8;
-        let left = (this.canvas.width - (this.numBricks * ((new Brick(this.canvas)).width)) / 2);
+        let left = (this.canvas.width - (this.numBricks * ((new Brick(this.canvas)).width))) / 2;
+        console.log(left);
         let offset = this.canvas.height / (this.numRows * 3);
         this.paddle = new Paddle(this.canvas);
         this.ball = new Ball(this.canvas);
         this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
         this.points = new Points(this.canvas);
+    }
+    ;
+    update() {
         this.draw(this.canvas.getContext('2d'));
     }
     draw(ctx) {
@@ -274,4 +281,4 @@ window.addEventListener('keydown', (e) => {
     }
 });
 obs.attach(game);
-setInterval(obs.loop, 100);
+obs.loop();

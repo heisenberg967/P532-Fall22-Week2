@@ -9,7 +9,8 @@ class Observable{
     private intervalId:any;
     private speed = 80;
     loop():void{
-        this.sprites.forEach(spr => spr.update());
+        this.intervalId = 
+        setInterval(()=>this.sprites.forEach(spr => spr.update()), this.speed);
         }
     attach(sprite:Sprite){
         this.sprites.push(sprite);
@@ -23,7 +24,7 @@ class Observable{
     }
 }
 
-function draw(canvas: HTMLCanvasElement, ball : Ball, paddle : Paddle, bricks: Array<Brick>, 
+/*function draw(canvas: HTMLCanvasElement, ball : Ball, paddle : Paddle, bricks: Array<Brick>, 
     points:Points){
 	let ball_vx = 3;
 	let ball_vy = 3;
@@ -98,6 +99,7 @@ function draw(canvas: HTMLCanvasElement, ball : Ball, paddle : Paddle, bricks: A
 	}, speed);
 	return intervalId;
 };
+*/
 function drawBricks(ctx : CanvasRenderingContext2D, bricks : Array<Brick>){
 	bricks.forEach((brick)=>
 	{	
@@ -114,6 +116,7 @@ function computeBrickPositions(canvas:HTMLCanvasElement, left :number = 80, offs
 	for(let j:number =0;j<numRows;j++)
 		{
 		let tmp_left = left;
+            console.log(tmp_left);
 		    for(let i=0;i<numBricks;i++)
 			{
             let new_brick : Brick = new Brick(canvas);
@@ -201,6 +204,15 @@ class Points {
 class Game implements Sprite{
     constructor(canvas:HTMLCanvasElement){
         this.canvas = canvas;
+        this.numBricks = 25;
+        this.numRows = 8;
+        let left : number = (this.canvas.width - (this.numBricks*((new Brick(this.canvas)).width)))/2;
+        console.log(left);
+        let offset : number = this.canvas.height / (this.numRows*3);
+        this.paddle = new Paddle(this.canvas);
+        this.ball = new Ball(this.canvas);
+        this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
+        this.points = new Points(this.canvas);
     };
     private canvas : HTMLCanvasElement;
     private numBricks : number;
@@ -215,19 +227,11 @@ class Game implements Sprite{
 	private vertical:string = "down";
 	private horizontal:string = "right";
     update():void {
-        this.numBricks = 25;
-        this.numRows = 8;
-        let left : number = (this.canvas.width - (this.numBricks*((new Brick(this.canvas)).width))/2);
-        let offset : number = this.canvas.height / (this.numRows*3);
-        this.paddle = new Paddle(this.canvas);
-        this.ball = new Ball(this.canvas);
-        this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
-        this.points = new Points(this.canvas);
+        
         this.draw(this.canvas.getContext('2d'));
     }
     draw(ctx:CanvasRenderingContext2D){
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		
 		drawBricks(ctx, this.bricks);
 		this.paddle.draw(ctx);
 		this.ball.draw(ctx);
@@ -316,4 +320,4 @@ window.addEventListener('keydown', (e)=>
     }
 });
 obs.attach(game);
-setInterval(obs.loop, 100);
+obs.loop();
