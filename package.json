@@ -1,0 +1,24 @@
+{
+  "name": "assignment1---canvas-drawing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "out/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run lite",
+    "lite":"lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VijayIyer/breakout.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VijayIyer/breakout/issues"
+  },
+  "homepage": "https://github.com/VijayIyer/breakout#readme",
+  "dependencies": {
+    "lite-server": "^2.6.1"
+  }
+}
