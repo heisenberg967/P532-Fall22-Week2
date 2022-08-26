@@ -5,16 +5,17 @@ function draw(){
 	speed = 80;
 	vertical = "down";
 	horizontal = "right";
+	bricks = computeBrickPositions(ctx, left, offset, numRows, numBricks, brick.width, brick.height);
 	setInterval(()=>{
 	function redraw(){
 		
 	    	ctx.clearRect(0, 0, canvas.width, canvas.height);
-		bricks = computeBrickPositions(ctx, left, offset, numRows, numBricks, brick.width, brick.height);
+		
 		drawBricks(ctx, bricks);
 		paddle.draw(ctx);
 		ball.draw(ctx);
 		
-		// collisions
+		
 		if(vertical == "down")
 			ball.y += ball_vy;
 		else if(vertical == "up")
@@ -24,26 +25,36 @@ function draw(){
 			ball.x -= ball_vx;
 		else if(horizontal == "right")
 			ball.x += ball_vx;
+		// collisions
+		// collision with paddle
 		if(((ball.x + ball.radius/2) > paddle.x && ((ball.x-ball.radius/2) < (paddle.x+paddle.width)) 
 			&& (ball.y + ball.radius/2 > paddle.y)))
 		{
 			console.log("collision");
 			vertical ="up";
 		}
+		// collision with boundaries
 		if(ball.x <= 0) horizontal = "right";
 		if(ball.x >= canvas.width) horizontal = "left";
 		if(ball.y <= 0) vertical = "down";
 		if(ball.y >= canvas.height) horizontal = "up";
-		bricks.forEach((brick)=>
+		// collision with brick wall
+		for(i = 0; i< bricks.length;i++)
+		{
+			if((ball.x > bricks[i].left) && 
+			    ((ball.x+ball.radius/2) < (bricks[i].left+bricks[i].width)) &&
+			    (ball.y - ball.radius/2) < bricks[i].top)
 			{
-			  
-			
+				bricks.splice(i, 1); 
+				vertical = "down";
+				break;	
 			}
-			);
+			
 		};
+	}
 	window.requestAnimationFrame(redraw);
 	}, speed);
-       
+
 };
 function drawBricks(ctx, bricks){
 	bricks.forEach((brick)=>
