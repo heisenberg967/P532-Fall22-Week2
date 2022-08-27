@@ -5,7 +5,8 @@ class Observable {
         this.speed = 80;
     }
     loop() {
-        setInterval(() => this.sprites.forEach(spr => spr.update()), this.speed);
+        this.intervalId =
+            setInterval(() => this.sprites.forEach(spr => spr.update()), this.speed);
     }
     attach(sprite) {
         this.sprites.push(sprite);
@@ -141,6 +142,12 @@ class Paddle {
         this.height = 10;
     }
     ;
+    moveLeft(x) {
+        this.x -= x;
+    }
+    moveRight(x) {
+        this.x += x;
+    }
     draw(ctx) {
         ctx.fillStyle = 'black';
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -257,26 +264,24 @@ class Game {
         ;
     }
 }
-let game;
-let obs;
 let canvas = document.getElementById('game-canvas');
 //draw(canvas, ball, paddle, bricks, points);
-game = new Game(canvas);
-obs = new Observable();
+let game = new Game(canvas);
+let obs = new Observable();
 window.addEventListener('keydown', (e) => {
     console.log(e.key);
     switch (e.key) {
         case "d":
-            game.paddle.x += 5;
+            game.paddle.moveRight(5);
             break;
         case "a":
-            game.paddle.x -= 5;
+            game.paddle.moveLeft(5);
             break;
         case "ArrowRight":
-            game.paddle.x += 5;
+            game.paddle.moveRight(5);
             break;
         case "ArrowLeft":
-            game.paddle.x -= 5;
+            game.paddle.moveLeft(5);
             break;
     }
 });

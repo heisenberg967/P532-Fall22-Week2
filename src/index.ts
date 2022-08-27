@@ -163,6 +163,12 @@ class Paddle {
    y : number;
    width : number;
    height : number; 
+   moveLeft(x:number){
+       this.x -= x;
+   }
+   moveRight(x:number){
+    this.x += x;
+}
    draw(ctx: CanvasRenderingContext2D){
     
     ctx.fillStyle = 'black';
@@ -290,13 +296,12 @@ class Game implements Sprite{
 		};
 	}
 }
-let game : Game;
-let obs : Observable;
+
 
 let canvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
 //draw(canvas, ball, paddle, bricks, points);
-game = new Game(canvas);
-obs = new Observable();
+let game: Game = new Game(canvas);
+let obs: Observable = new Observable();
 
 
 window.addEventListener('keydown', (e)=>
@@ -304,17 +309,17 @@ window.addEventListener('keydown', (e)=>
     console.log(e.key);
     switch(e.key){
         case "d": 
-    	    game.paddle.x += 5;
+    	    game.paddle.moveRight(5);
     	    break;
-	case "a": 
-            game.paddle.x -= 5;
+     	case "a": 
+         game.paddle.moveLeft(5);
     	    break;
 
     	case "ArrowRight": 
-            game.paddle.x += 5;
+            game.paddle.moveRight(5);
     	    break;
     	case "ArrowLeft":
-    	    game.paddle.x -= 5;
+    	    game.paddle.moveLeft(5);
     	    break;
     	
     }
