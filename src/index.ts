@@ -8,11 +8,12 @@ class Observable{
     private sprites:Array<Sprite> = [];
     private intervalId:any;
     private speed = 80;
-    loop():void{
-        this.intervalId = 
-        setInterval(()=>this.sprites.forEach(spr => spr.update()), this.speed);
-        }
+    changeState():void{
+        
+        this.sprites.forEach(spr => spr.update())
+    }
     attach(sprite:Sprite){
+    if(!this.sprites.some((e)=> e==sprite))
         this.sprites.push(sprite);
     }
     detach(sprite:Sprite){
@@ -116,7 +117,7 @@ function computeBrickPositions(canvas:HTMLCanvasElement, left :number = 80, offs
 	for(let j:number =0;j<numRows;j++)
 		{
 		let tmp_left = left;
-            console.log(tmp_left);
+            
 		    for(let i=0;i<numBricks;i++)
 			{
             let new_brick : Brick = new Brick(canvas);
@@ -154,20 +155,24 @@ class Brick {
 class Paddle {
     constructor(canvas : HTMLCanvasElement)
     {
+        this.canvas = canvas;
         this.x = canvas.width/2;
         this.y = canvas.height - (canvas.height/20);
         this.width = 80;
         this.height = 10;
     };
+   canvas : HTMLCanvasElement;
    x : number;
    y : number;
    width : number;
    height : number; 
    moveLeft(x:number){
-       this.x -= x;
+    if(this.x > 0)   
+        this.x -= x;
    }
    moveRight(x:number){
-    this.x += x;
+    if((this.x + this.width) < this.canvas.width)
+        this.x += x;
 }
    draw(ctx: CanvasRenderingContext2D){
     
@@ -213,7 +218,7 @@ class Game implements Sprite{
         this.numBricks = 25;
         this.numRows = 8;
         let left : number = (this.canvas.width - (this.numBricks*((new Brick(this.canvas)).width)))/2;
-        console.log(left);
+        
         let offset : number = this.canvas.height / (this.numRows*3);
         this.paddle = new Paddle(this.canvas);
         this.ball = new Ball(this.canvas);
@@ -257,11 +262,13 @@ class Game implements Sprite{
 		if(((this.ball.x + this.ball.radius/2) > this.paddle.x && ((this.ball.x-this.ball.radius/2) < (this.paddle.x+this.paddle.width)) 
 			&& (this.ball.y + this.ball.radius/2 > this.paddle.y)))
 		{
+            this.ball_vx *= (1+(Math.abs((this.paddle.x+this.paddle.width/2) - this.ball.x) / 
+                            this.paddle.width));
 			console.log("collision");
 			this.vertical ="up";
 		}
 		// collision with boundaries
-		if(this.ball.x <= 0) this.horizontal = "right";
+		if((this.ball.x - this.ball.radius)<= 0) this.horizontal = "right";
 		if(this.ball.x >= this.canvas.width) this.horizontal = "left";
 		if(this.ball.y <= 0) this.vertical = "down";
 		if(this.ball.y >= this.canvas.height) status = "over";
@@ -269,11 +276,19 @@ class Game implements Sprite{
 		// collision with brick wall
 		for(let i = 0; i< this.bricks.length;i++)
 		{
-			if(((this.ball.x+this.ball.radius) > this.bricks[i].left) && 
-			    ((this.ball.x+this.ball.radius/2) < (this.bricks[i].left+this.bricks[i].width)) &&
-			    (this.ball.y - this.ball.radius/2) < this.bricks[i].top)
+			if (
+                ((this.ball.x + this.ball.radius) >= this.bricks[i].left 
+                    && (this.ball.x < this.bricks[i].left+this.bricks[i].width)
+                    && this.ball.y <= (this.bricks[i].top + this.bricks[i].height)
+                && (this.ball.y+this.ball.radius) >= this.bricks[i].top)
+            // ||  (this.ball.x >= this.bricks[i].left && this.ball.y >= this.bricks[i].top)
+            // ||  (this.ball.x <= (this.bricks[i].left+this.bricks[i].width) && this.ball.y <= (this.bricks[i].top + this.bricks[i].height))
+            // ||  (this.ball.x <= (this.bricks[i].left+this.bricks[i].width) && this.ball.y >= this.bricks[i].top)
+            )
 			{
+                
 				this.bricks.splice(i, 1); 
+                console.log(this.ball.x + " "+this.ball.y+" "+this.bricks[i].top)
 				if(this.vertical == "down") this.vertical = "up";
 				else this.vertical = "down";
 				switch(this.bricks[i].color)
@@ -292,21 +307,51 @@ class Game implements Sprite{
 					break;
 				}
 			}
+            break;
 			
 		};
 	}
 }
+class Clock implements Sprite{
+    constructor(canvas:HTMLCanvasElement){
+        this.canvas = canvas;
+        this.time = 0;
+    };
+    time : number;
+    canvas : HTMLCanvasElement;
+	// add(x : number){
+	// 	this.value =  (parseInt(this.value) + x).toString();
+	// };
+	update(): void {
+    this.time+=1;
+    let secs = (this.time/10);
+    
+   
+    let ctx: CanvasRenderingContext2D = this.canvas.getContext('2d');
+    
+    let h = Math.floor(secs / 3600);
+    let m = Math.floor(secs % 3600 / 60);
+    let s = Math.floor(secs % 3600 % 60);
 
+    // let hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    // let mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    // let sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.font = "20px Arial";
+	ctx.fillText(h+":"+m+":"+s, 0, this.canvas.height / 2);
+	}
+}
 
-let canvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
-//draw(canvas, ball, paddle, bricks, points);
-let game: Game = new Game(canvas);
+let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
+let clockCanvas : HTMLCanvasElement  = document.getElementById('clock-canvas') as HTMLCanvasElement;
+let game: Game = new Game(gameCanvas);
+let clock : Clock = new Clock(clockCanvas);
 let obs: Observable = new Observable();
-
 
 window.addEventListener('keydown', (e)=>
 {
-    console.log(e.key);
+    
     switch(e.key){
         case "d": 
     	    game.paddle.moveRight(5);
@@ -325,4 +370,20 @@ window.addEventListener('keydown', (e)=>
     }
 });
 obs.attach(game);
-obs.loop();
+obs.attach(clock);
+// 1st method of changing state - time units
+setInterval(()=>obs.changeState(), 100);
+// 2nd method of changing state - when mouse is held down
+//gameCanvas.addEventListener('mouseover', (e:MouseEvent)=>obs.detach(game));
+document.getElementById("pauseGame").addEventListener('click', ()=>{
+    obs.detach(game);
+});
+document.getElementById("restartGame").addEventListener('click', ()=>{
+    obs.attach(game);
+});
+document.getElementById("pauseClock").addEventListener('click', ()=>{
+    obs.detach(clock);
+});
+document.getElementById("restartClock").addEventListener('click', ()=>{
+    obs.attach(clock);
+});
