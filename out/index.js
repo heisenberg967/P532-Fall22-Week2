@@ -1,24 +1,6 @@
-"use strict";
-class Observable {
-    constructor() {
-        this.sprites = [];
-        this.speed = 80;
-    }
-    changeState() {
-        this.sprites.forEach(spr => spr.update());
-    }
-    attach(sprite) {
-        if (!this.sprites.some((e) => e == sprite))
-            this.sprites.push(sprite);
-    }
-    detach(sprite) {
-        for (let i = 0; i < this.sprites.length; i++) {
-            if (this.sprites[i] == sprite) {
-                this.sprites.splice(this.sprites.indexOf(this.sprites[i]), 1);
-            }
-        }
-    }
-}
+import { Game } from "./Observer/game_observer.js";
+import { Clock } from "./Observer/clock_observer.js";
+import { Observable } from "./Observable/observable.js";
 /*function draw(canvas: HTMLCanvasElement, ball : Ball, paddle : Paddle, bricks: Array<Brick>,
     points:Points){
     let ball_vx = 3;
@@ -95,209 +77,6 @@ class Observable {
     return intervalId;
 };
 */
-function drawBricks(ctx, bricks) {
-    bricks.forEach((brick) => {
-        drawBorder(ctx, brick.left, brick.top, brick.width, brick.height);
-        ctx.fillStyle = brick.color;
-        ctx.fillRect(brick.left, brick.top, brick.width, brick.height);
-    });
-}
-function computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numBricks = 25) {
-    let bricks = [];
-    let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow'];
-    for (let j = 0; j < numRows; j++) {
-        let tmp_left = left;
-        for (let i = 0; i < numBricks; i++) {
-            let new_brick = new Brick(canvas);
-            tmp_left = tmp_left + new_brick.width;
-            new_brick.left = tmp_left;
-            new_brick.top = offset;
-            new_brick.color = colors[j];
-            bricks.push(new_brick);
-        }
-        let tmp_brick = new Brick(canvas);
-        offset = offset + tmp_brick.height + 2;
-    }
-    return bricks;
-}
-function drawBorder(ctx, xPos, yPos, width, height, thickness = 2) {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
-}
-class Brick {
-    constructor(canvas) {
-        this.color = 'yellow';
-        this.left = 0;
-        this.top = 0;
-        this.width = 30;
-        this.height = 10;
-    }
-}
-class Paddle {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.x = canvas.width / 2;
-        this.y = canvas.height - (canvas.height / 20);
-        this.width = 80;
-        this.height = 10;
-    }
-    ;
-    moveLeft(x) {
-        if (this.x > 0)
-            this.x -= x;
-    }
-    moveRight(x) {
-        if ((this.x + this.width) < this.canvas.width)
-            this.x += x;
-    }
-    draw(ctx) {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-}
-class Ball {
-    constructor(canvas) {
-        this.x = canvas.width / 2;
-        this.y = canvas.height / 2;
-        this.radius = 10;
-        this.color = 'blue';
-    }
-    draw(ctx) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    }
-}
-;
-class Points {
-    constructor(canvas) {
-        this.value = "0";
-    }
-    ;
-    add(x) {
-        this.value = (parseInt(this.value) + x).toString();
-    }
-    ;
-    draw(ctx) {
-        ctx.font = "30px Arial";
-        ctx.fillText(this.value, 30, 30);
-    }
-}
-class Game {
-    constructor(canvas) {
-        this.ball_vx = 3;
-        this.ball_vy = 3;
-        this.speed = 50;
-        this.vertical = "down";
-        this.horizontal = "right";
-        this.canvas = canvas;
-        this.numBricks = 25;
-        this.numRows = 8;
-        let left = (this.canvas.width - (this.numBricks * ((new Brick(this.canvas)).width))) / 2;
-        let offset = this.canvas.height / (this.numRows * 3);
-        this.paddle = new Paddle(this.canvas);
-        this.ball = new Ball(this.canvas);
-        this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
-        this.points = new Points(this.canvas);
-    }
-    ;
-    update() {
-        this.draw(this.canvas.getContext('2d'));
-    }
-    draw(ctx) {
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        drawBricks(ctx, this.bricks);
-        this.paddle.draw(ctx);
-        this.ball.draw(ctx);
-        this.points.draw(ctx);
-        if (this.vertical == "down")
-            this.ball.y += this.ball_vy;
-        else if (this.vertical == "up")
-            this.ball.y -= this.ball_vy;
-        if (this.horizontal == "left")
-            this.ball.x -= this.ball_vx;
-        else if (this.horizontal == "right")
-            this.ball.x += this.ball_vx;
-        // collisions
-        // collision with paddle
-        if (((this.ball.x + this.ball.radius / 2) > this.paddle.x && ((this.ball.x - this.ball.radius / 2) < (this.paddle.x + this.paddle.width))
-            && (this.ball.y + this.ball.radius / 2 > this.paddle.y))) {
-            this.ball_vx *= (1 + (Math.abs((this.paddle.x + this.paddle.width / 2) - this.ball.x) /
-                this.paddle.width));
-            console.log("collision");
-            this.vertical = "up";
-        }
-        // collision with boundaries
-        if ((this.ball.x - this.ball.radius) <= 0)
-            this.horizontal = "right";
-        if (this.ball.x >= this.canvas.width)
-            this.horizontal = "left";
-        if (this.ball.y <= 0)
-            this.vertical = "down";
-        if (this.ball.y >= this.canvas.height)
-            status = "over";
-        // collision with brick wall
-        for (let i = 0; i < this.bricks.length; i++) {
-            if (((this.ball.x + this.ball.radius) >= this.bricks[i].left
-                && (this.ball.x < this.bricks[i].left + this.bricks[i].width)
-                && this.ball.y <= (this.bricks[i].top + this.bricks[i].height)
-                && (this.ball.y + this.ball.radius) >= this.bricks[i].top)
-            // ||  (this.ball.x >= this.bricks[i].left && this.ball.y >= this.bricks[i].top)
-            // ||  (this.ball.x <= (this.bricks[i].left+this.bricks[i].width) && this.ball.y <= (this.bricks[i].top + this.bricks[i].height))
-            // ||  (this.ball.x <= (this.bricks[i].left+this.bricks[i].width) && this.ball.y >= this.bricks[i].top)
-            ) {
-                this.bricks.splice(i, 1);
-                console.log(this.ball.x + " " + this.ball.y + " " + this.bricks[i].top);
-                if (this.vertical == "down")
-                    this.vertical = "up";
-                else
-                    this.vertical = "down";
-                switch (this.bricks[i].color) {
-                    case "yellow":
-                        this.points.add(1);
-                        break;
-                    case "green":
-                        this.points.add(3);
-                        break;
-                    case "orange":
-                        this.points.add(5);
-                        break;
-                    case "red":
-                        this.points.add(7);
-                        break;
-                }
-            }
-            break;
-        }
-        ;
-    }
-}
-class Clock {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.time = 0;
-    }
-    ;
-    // add(x : number){
-    // 	this.value =  (parseInt(this.value) + x).toString();
-    // };
-    update() {
-        this.time += 1;
-        let secs = (this.time / 10);
-        let ctx = this.canvas.getContext('2d');
-        let h = Math.floor(secs / 3600);
-        let m = Math.floor(secs % 3600 / 60);
-        let s = Math.floor(secs % 3600 % 60);
-        // let hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-        // let mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-        // let sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.font = "20px Arial";
-        ctx.fillText(h + ":" + m + ":" + s, 0, this.canvas.height / 2);
-    }
-}
 let gameCanvas = document.getElementById('game-canvas');
 let clockCanvas = document.getElementById('clock-canvas');
 let game = new Game(gameCanvas);
@@ -328,12 +107,12 @@ setInterval(() => obs.changeState(), 100);
 document.getElementById("pauseGame").addEventListener('click', () => {
     obs.detach(game);
 });
-document.getElementById("restartGame").addEventListener('click', () => {
+document.getElementById("resumeGame").addEventListener('click', () => {
     obs.attach(game);
 });
 document.getElementById("pauseClock").addEventListener('click', () => {
     obs.detach(clock);
 });
-document.getElementById("restartClock").addEventListener('click', () => {
+document.getElementById("resumeClock").addEventListener('click', () => {
     obs.attach(clock);
 });
