@@ -27,7 +27,7 @@ export class Clock implements IClock {
         }
         if (this.minutesLabel){
             if (this.totalSeconds > 59){
-                this.minutesLabel.innerHTML = "0"+parseInt(this.updateTimeVal(this.totalSeconds/60)).toString();
+                this.minutesLabel.innerHTML = parseInt(this.updateTimeVal(this.totalSeconds/60)).toString();
             }
         }
       }
