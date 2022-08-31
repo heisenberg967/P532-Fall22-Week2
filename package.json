@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "webpack-cli --config ./webpack.config.js",
-    "start": "npm i && webpack-dev-server",
+    "start": "npm --openssl-legacy-provider i && webpack-dev-server ",
     "dev": "nodemon --exec ts-node src/main.ts"
   },
   "author": "Rishab Ravi",

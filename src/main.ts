@@ -2,6 +2,9 @@ import { BreakoutGame } from './BreakoutGame';
 import { CanvasPath } from './CanvasPath';
 import { Clock } from './Clock';
 import "../styles.css";
+import { Observable } from './Observable';
+
+let obs = new Observable();
 
 const createCanvas = (): HTMLCanvasElement => {
     const clock: HTMLDivElement = document.createElement("div");
@@ -46,8 +49,12 @@ const breakoutGameArgs: IBreakoutGameArgs = {
 
 // start game
 const breakoutGame = new BreakoutGame(breakoutGameArgs);
-breakoutGame.run();
+
+//breakoutGame.run();
 
 // start clock
 const clock = new Clock(document);
-clock.runClock();
+//clock.runClock();
+obs.attach(breakoutGame);
+obs.attach(clock);
+setInterval(()=>obs.changeState(), 10);

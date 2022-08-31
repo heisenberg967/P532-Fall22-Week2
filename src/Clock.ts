@@ -1,3 +1,4 @@
+import { IClock } from "./Interfaces/IClock";
 export class Clock implements IClock {
     
     private document: Document | undefined;
@@ -40,9 +41,12 @@ export class Clock implements IClock {
         return valString;
     }
     }
-
+    update(): void {
+        this.runClock();
+    }
     runClock = () => {
-        setInterval(this.setTime, 1000);
+        //setInterval(this.setTime, 1000);
+        this.setTime();
     }
 
 }

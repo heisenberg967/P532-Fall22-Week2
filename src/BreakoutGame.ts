@@ -1,3 +1,4 @@
+import { IBreakoutGame } from "./Interfaces/IBreakoutGame";
 const BALLMOVEX: number = 2;
 const BALLMOVEY: number = -2;
 const LIVES: number = 3;
@@ -242,10 +243,12 @@ export class BreakoutGame implements IBreakoutGame {
       document.location.reload();
     }
   }
-
+  update() : void{
+    this.run();
+  }
   run = () => {
     this.draw();
-    window.requestAnimationFrame(this.run);
+  //  window.requestAnimationFrame(this.run);
   }
 
 }

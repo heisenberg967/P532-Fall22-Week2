@@ -1,4 +1,6 @@
-  interface IBreakoutGame {
+import { Sprite } from "./ISprite";
+
+  interface IBreakoutGame extends Sprite{
       collisionDetection(): void;
       drawBall(): void;
       drawPaddle(): void;
