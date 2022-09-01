@@ -11,26 +11,12 @@ export class MoveCommand {
         this.ball.y += this.ball.vy;
         this.ball.draw();
     }
-}
-export class UndoCommand {
-    constructor(ball) {
-        this.ball = ball;
-    }
-    execute() {
-        this.x = this.ball.x;
-        this.y = this.ball.y;
-        this.vx = this.ball.vx;
-        this.vy = this.ball.vy;
-        this.ball.x -= this.ball.vx;
-        this.ball.y -= this.ball.vy;
-        this.ball.draw();
-    }
-}
-export class PauseCommand {
-    constructor(ball) {
-        this.ball = ball;
-    }
-    execute() {
+    undo() {
+        this.ball.x = this.x;
+        this.ball.y = this.y;
+        this.ball.vx = this.vx;
+        this.ball.vy = this.vy;
+        console.log(this.ball.x + ":" + this.ball.y + ":" + this.ball.vx + ":" + this.ball.vy);
         this.ball.draw();
     }
 }

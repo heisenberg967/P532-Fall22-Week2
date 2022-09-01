@@ -1,7 +1,7 @@
 export var state;
 (function (state) {
     state[state["do"] = 0] = "do";
-    state[state["pause"] = 1] = "pause";
+    state[state["replay"] = 1] = "replay";
     state[state["undo"] = 2] = "undo";
 })(state || (state = {}));
 export class Observable {

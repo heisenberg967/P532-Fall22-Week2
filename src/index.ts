@@ -3,16 +3,6 @@ import {Clock} from "./Observer/clock_observer.js"
 import {Observable, state} from "./Observable/observable.js"
 import { Ball } from "./Components/ball.js";
 
-var gameState : state = state.do;
-function start(){
-    gameState = state.do;
-};
-function pause(){
-    gameState = state.pause;
-}
-function undo(){
-    gameState = state.undo;
-}
 
 window.addEventListener('keydown', (e)=>
 {
@@ -35,22 +25,28 @@ window.addEventListener('keydown', (e)=>
 
 var intervalId : any;
 document.getElementById("start").addEventListener('click', ()=>{
-    intervalId = setInterval(()=> obs.changeState(state.do), 1000);
+    obs.detach(game);
+    game = new Game(gameCanvas);
+    obs.attach(game);
+    intervalId = setInterval(()=> obs.changeState(state.do), 100);
     
 });
 document.getElementById("pause").addEventListener('click', ()=>{
-    clearInterval(intervalId);
+    if (intervalId) {
+        console.log("pause clicked");
+        clearInterval(intervalId);
+    }
+});
+document.getElementById("resume").addEventListener('click', ()=>{
+    intervalId = setInterval(()=> obs.changeState(state.do), 100);
 });
 document.getElementById("undo").addEventListener('click', ()=>{
     obs.changeState(state.undo);
 });
 document.getElementById("replay").addEventListener('click', ()=>{
-    obs.attach(clock);
+   
 });
-document.getElementById("undo").addEventListener('click', ()=>{
-    
-    
-});
+
 let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
 let clockCanvas : HTMLCanvasElement  = document.getElementById('clock-canvas') as HTMLCanvasElement;
 let game: Game = new Game(gameCanvas);
@@ -61,6 +57,6 @@ obs.attach(game);
 obs.attach(clock);
 //obs.attach(ball);
 // 1st method of changing state - time units
-setInterval(()=>obs.changeState(gameState), 100);
+//setInterval(()=>obs.changeState(gameState), 100);
 // 2nd method of changing state - when mouse is held down
-gameCanvas.addEventListener('mouseover', (e:MouseEvent)=>obs.changeState(gameState));
+//gameCanvas.addEventListener('mouseover', (e:MouseEvent)=>obs.changeState(gameState));

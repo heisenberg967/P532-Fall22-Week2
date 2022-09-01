@@ -4,7 +4,7 @@ export class Ball {
         this.x = this.canvas.width / 2;
         this.y = this.canvas.height / 2;
         this.vx = 4;
-        this.vy = 10;
+        this.vy = 4;
         this.radius = 10;
         this.color = 'blue';
     }

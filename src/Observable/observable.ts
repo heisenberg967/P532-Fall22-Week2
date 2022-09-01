@@ -1,7 +1,7 @@
 import { Sprite } from "../Observer/observer";
 export enum state{
     do,
-    pause,
+    replay,
     undo
 }
 export class Observable{

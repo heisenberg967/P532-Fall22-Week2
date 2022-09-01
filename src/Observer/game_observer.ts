@@ -3,7 +3,7 @@ import {Paddle} from "../Components/paddle.js";
 import {Brick} from "../Components/brick.js";
 import {Points} from "../Components/points.js"
 import {Sprite} from "observer";
-import { Command, MoveCommand, PauseCommand, UndoCommand } from "../Command/command.js";
+import { MoveCommand } from "../Command/command.js";
 import {state} from "../Observable/observable.js";
 
 function computeBrickPositions(canvas:HTMLCanvasElement, left :number = 80, offset:number = 10, numRows :number = 8, numBricks:number = 25){
@@ -40,7 +40,7 @@ export class Game implements Sprite{
         this.ball = new Ball(this.canvas);
         this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
         this.points = new Points(this.canvas);
-		
+		this.commands = [];
 		
     };
 	private drawBricks(ctx: CanvasRenderingContext2D):void{
@@ -54,12 +54,13 @@ export class Game implements Sprite{
     private ball : Ball;
     private bricks : Array<Brick>;
     private points : Points;
-	private command : Command;
+	commands : Array<MoveCommand>;
     private gameState : state;
 
 	private speed:number = 50;
     update(gameState: state):void {
 			this.gameState = gameState;
+			
 			this.draw(this.canvas.getContext('2d'));
     }
     movePaddleLeft(amt:number){
@@ -72,7 +73,6 @@ export class Game implements Sprite{
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.drawBricks(ctx);
 		this.paddle.update();
-		
 		this.points.update();
 		
 	if(this.gameState == state.do)
@@ -129,11 +129,15 @@ export class Game implements Sprite{
            
 			
 		};
-			
-			this.command.execute();
+		this.commands.push(new MoveCommand(this.ball));
+		this.commands[this.commands.length - 1].execute();
 	}
-	else{
-		this.command.undo();
+	else if(this.gameState == state.undo){
+		
+		if(this.commands.length  > 0)
+			this.commands.pop().undo();
 		}
+	
+
 	}
 }
