@@ -1,4 +1,6 @@
-export class Paddle {
+import { Sprite } from "../Observer/observer";
+
+export class Paddle implements Sprite{
     constructor(canvas : HTMLCanvasElement)
     {
         this.canvas = canvas;
@@ -20,6 +22,9 @@ export class Paddle {
     if((this.x + this.width) < this.canvas.width)
         this.x += x;
 }
+    update(): void {
+        this.draw(this.canvas.getContext('2d'));
+    }
    draw(ctx: CanvasRenderingContext2D){
     
     ctx.fillStyle = 'black';

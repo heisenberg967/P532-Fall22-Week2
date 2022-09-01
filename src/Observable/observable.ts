@@ -1,11 +1,14 @@
-
+import { Sprite } from "../Observer/observer";
+export enum state{
+    do,
+    pause,
+    undo
+}
 export class Observable{
     private sprites:Array<Sprite> = [];
-    private intervalId:any;
-    private speed = 80;
-    changeState():void{
+    changeState(state: state):void{
         
-        this.sprites.forEach(spr => spr.update())
+        this.sprites.forEach(spr => spr.update(state))
     }
     attach(sprite:Sprite){
     if(!this.sprites.some((e)=> e==sprite))

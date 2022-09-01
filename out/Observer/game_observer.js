@@ -2,17 +2,8 @@ import { Ball } from "../Components/ball.js";
 import { Paddle } from "../Components/paddle.js";
 import { Brick } from "../Components/brick.js";
 import { Points } from "../Components/points.js";
-function drawBorder(ctx, xPos, yPos, width, height, thickness = 2) {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(xPos - (thickness), yPos - (thickness), width + (thickness * 2), height + (thickness * 2));
-}
-function drawBricks(ctx, bricks) {
-    bricks.forEach((brick) => {
-        drawBorder(ctx, brick.left, brick.top, brick.width, brick.height);
-        ctx.fillStyle = brick.color;
-        ctx.fillRect(brick.left, brick.top, brick.width, brick.height);
-    });
-}
+import { MoveCommand, PauseCommand, UndoCommand } from "../Command/command.js";
+import { state } from "../Observable/observable.js";
 function computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numBricks = 25) {
     let bricks = [];
     let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow'];
@@ -33,11 +24,7 @@ function computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numB
 }
 export class Game {
     constructor(canvas) {
-        this.ball_vx = 3;
-        this.ball_vy = 3;
         this.speed = 50;
-        this.vertical = "down";
-        this.horizontal = "right";
         this.canvas = canvas;
         this.numBricks = 25;
         this.numRows = 8;
@@ -49,63 +36,56 @@ export class Game {
         this.points = new Points(this.canvas);
     }
     ;
-    update() {
-        this.draw(this.canvas.getContext('2d'));
+    drawBricks(ctx) {
+        this.bricks.forEach((brick) => brick.draw(ctx));
+    }
+    update(gameState) {
+        console.log(gameState);
+        if (gameState == state.do) {
+            this.command = new MoveCommand(this.ball);
+            this.draw(this.canvas.getContext('2d'));
+        }
+        else if (gameState == state.pause) {
+            this.command = new PauseCommand(this.ball);
+            this.draw(this.canvas.getContext('2d'));
+        }
+        else if (gameState == state.undo) {
+            this.command = new UndoCommand(this.ball);
+            this.draw(this.canvas.getContext('2d'));
+        }
+    }
+    movePaddleLeft(amt) {
+        this.paddle.moveLeft(amt);
+    }
+    movePaddleRight(amt) {
+        this.paddle.moveRight(amt);
     }
     draw(ctx) {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        drawBricks(ctx, this.bricks);
-        this.paddle.draw(ctx);
-        this.ball.draw(ctx);
-        this.points.draw(ctx);
-        if (this.vertical == "down")
-            this.ball.y += this.ball_vy;
-        else if (this.vertical == "up")
-            this.ball.y -= this.ball_vy;
-        if (this.horizontal == "left")
-            this.ball.x -= this.ball_vx;
-        else if (this.horizontal == "right")
-            this.ball.x += this.ball_vx;
-        // collisions
-        // collision with paddle
-        if (((this.ball.x + this.ball.radius / 2) > this.paddle.x && ((this.ball.x - this.ball.radius / 2) < (this.paddle.x + this.paddle.width))
+        this.drawBricks(ctx);
+        this.paddle.update();
+        this.points.update();
+        /** collisions*/
+        /** collision with paddle*/
+        if (((this.ball.x + this.ball.radius) > this.paddle.x
+            && ((this.ball.x - this.ball.radius / 2) < (this.paddle.x + this.paddle.width))
             && (this.ball.y + this.ball.radius / 2 > this.paddle.y))) {
-            this.ball_vx *= (1 + (Math.abs((this.paddle.x + this.paddle.width / 2) - this.ball.x) /
-                this.paddle.width));
-            console.log("collision");
-            this.vertical = "up";
+            this.ball.vy = -this.ball.vy;
         }
-        // collision with boundaries
-        if ((this.ball.x - this.ball.radius) <= 0)
-            this.horizontal = "right";
-        if (this.ball.x >= this.canvas.width)
-            this.horizontal = "left";
-        if (this.ball.y <= 0)
-            this.vertical = "down";
-        if (this.ball.y >= this.canvas.height)
-            status = "over";
-        console.log(this.ball.x + "," + this.ball.y + ":");
-        // collision with brick wall
+        /** collision with boundaries*/
+        if ((this.ball.x - this.ball.radius <= 0) || this.ball.x >= this.canvas.width)
+            this.ball.vx = -this.ball.vx;
+        if ((this.ball.y <= 0) || this.ball.y >= this.canvas.height)
+            this.ball.vy = -this.ball.vy;
+        /** collision with brick wall*/
         for (let i = 0; i < this.bricks.length; i++) {
-            console.log(" " + this.bricks[i].left + " " +
-                (this.bricks[i].left + this.bricks[i].width) +
-                " " + this.bricks[i].top + " " +
-                (this.bricks[i].top + this.bricks[i].height));
             if (this.ball.x >= this.bricks[i].left
                 && (this.ball.x <= (this.bricks[i].left + this.bricks[i].width))
                 && this.ball.y >= this.bricks[i].top
-                && this.ball.y <= (this.bricks[i].top + this.bricks[i].height)
-            // && (this.ball.y >= this.bricks[i].left 
-            //     && this.ball.y <= (this.bricks[i].left+this.bricks[i].width)
-            //     && this.ball.y >= this.bricks[i].top
-            //     && this.ball.y <= (this.bricks[i].top+this.bricks[i].height))
-            ) {
+                && this.ball.y <= (this.bricks[i].top + this.bricks[i].height)) {
                 this.bricks.splice(i, 1);
                 console.log(this.ball.x + " " + this.ball.y + " " + this.bricks[i].top);
-                if (this.vertical == "down")
-                    this.vertical = "up";
-                else
-                    this.vertical = "down";
+                this.ball.vy = -this.ball.vy;
                 switch (this.bricks[i].color) {
                     case "yellow":
                         this.points.add(1);
@@ -126,5 +106,6 @@ export class Game {
             }
         }
         ;
+        this.command.execute();
     }
 }

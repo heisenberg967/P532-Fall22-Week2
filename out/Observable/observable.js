@@ -1,10 +1,15 @@
+export var state;
+(function (state) {
+    state[state["do"] = 0] = "do";
+    state[state["pause"] = 1] = "pause";
+    state[state["undo"] = 2] = "undo";
+})(state || (state = {}));
 export class Observable {
     constructor() {
         this.sprites = [];
-        this.speed = 80;
     }
-    changeState() {
-        this.sprites.forEach(spr => spr.update());
+    changeState(state) {
+        this.sprites.forEach(spr => spr.update(state));
     }
     attach(sprite) {
         if (!this.sprites.some((e) => e == sprite))
