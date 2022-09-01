@@ -12,12 +12,17 @@ export class MoveCommand implements Command{
     private vx:number;
     private vy:number;
     constructor(private readonly ball : Ball){
-    }
-    execute():void{
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.vx = this.ball.vx;
         this.vy = this.ball.vy;
+    }
+    execute():void{
+        
+        this.ball.x = this.x;
+        this.ball.y = this.y;
+        this.ball.vx = this.vx;
+        this.ball.vy = this.vy;
         this.ball.x += this.ball.vx;
         this.ball.y += this.ball.vy;
         this.ball.draw();

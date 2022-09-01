@@ -1,12 +1,16 @@
 export class MoveCommand {
     constructor(ball) {
         this.ball = ball;
-    }
-    execute() {
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.vx = this.ball.vx;
         this.vy = this.ball.vy;
+    }
+    execute() {
+        this.ball.x = this.x;
+        this.ball.y = this.y;
+        this.ball.vx = this.vx;
+        this.ball.vy = this.vy;
         this.ball.x += this.ball.vx;
         this.ball.y += this.ball.vy;
         this.ball.draw();

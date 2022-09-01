@@ -38,8 +38,7 @@ document.getElementById("undo").addEventListener('click', () => {
     obs.changeState(state.undo);
 });
 document.getElementById("replay").addEventListener('click', () => {
-    game.commands = game.commands.reverse();
-    intervalId = setInterval(() => obs.changeState(state.do), 100);
+    intervalId = setInterval(() => obs.changeState(state.replay), 100);
 });
 let gameCanvas = document.getElementById('game-canvas');
 let clockCanvas = document.getElementById('clock-canvas');

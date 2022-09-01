@@ -105,8 +105,11 @@ export class Game {
                 this.commands.pop().undo();
         }
         else if (this.gameState == state.replay) {
-            this.commands[0].execute();
-            this.commands.shift();
+            if (this.commands.length > 0) {
+                let command = this.commands.shift();
+                command.execute();
+                console.log(this.commands.length);
+            }
         }
     }
 }

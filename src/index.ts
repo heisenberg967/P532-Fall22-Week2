@@ -44,7 +44,7 @@ document.getElementById("undo").addEventListener('click', ()=>{
     obs.changeState(state.undo);
 });
 document.getElementById("replay").addEventListener('click', ()=>{
-   
+    intervalId = setInterval(()=> obs.changeState(state.replay), 100);
 });
 
 let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
