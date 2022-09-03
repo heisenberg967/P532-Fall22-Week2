@@ -37,9 +37,11 @@ export class MovePaddle {
     }
     execute() {
         this.x = this.paddle.x;
+        this.paddle.draw();
     }
     undo() {
         this.paddle.x = this.x;
+        this.paddle.draw();
     }
 }
 export class BlowBrickCommand {
@@ -48,8 +50,12 @@ export class BlowBrickCommand {
         this.i = i;
     }
     execute() {
-        this.blownBrick = this.bricks[this.i];
-        this.bricks.splice(this.i, 1);
+        if (this.i == -1) {
+        }
+        else {
+            this.blownBrick = this.bricks[this.i];
+            this.bricks.splice(this.i, 1);
+        }
         this.bricks.forEach(brick => brick.draw());
     }
     undo() {

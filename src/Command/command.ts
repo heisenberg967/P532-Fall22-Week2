@@ -48,18 +48,19 @@ export class MovePaddle{
     private x:number;
     private y:number;
     private vx:number;
-    constructor(private readonly paddle:Paddle){
+    constructor(private paddle:Paddle){
         this.x = this.paddle.x;
         this.vx = this.paddle.vx;
     }
     execute():void{
         
         this.x = this.paddle.x;
+        this.paddle.draw();
         
     }
     undo():void{
         this.paddle.x = this.x;
-        
+        this.paddle.draw();
     }
 }
 export class BlowBrickCommand{
@@ -69,8 +70,13 @@ export class BlowBrickCommand{
     }
 
     execute():void{
-        this.blownBrick = this.bricks[this.i];
-        this.bricks.splice(this.i, 1);
+        if(this.i == -1){
+
+        }
+        else{
+            this.blownBrick = this.bricks[this.i];
+            this.bricks.splice(this.i, 1);
+        }
         this.bricks.forEach(brick => brick.draw());
         
     }

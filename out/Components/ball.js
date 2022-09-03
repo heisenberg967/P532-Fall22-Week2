@@ -4,7 +4,7 @@ export class Ball {
         this.x = x;
         this.y = y;
         this.vx = 4;
-        this.vy = 4;
+        this.vy = 10;
         this.radius = 10;
         this.color = 'blue';
     }
