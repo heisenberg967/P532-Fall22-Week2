@@ -32,7 +32,7 @@ export class Paddle implements Sprite{
         this.x += this.vx;
 }
     update(): void {
-        
+        this.draw();
     }
    draw(){
     let ctx = this.canvas.getContext('2d');

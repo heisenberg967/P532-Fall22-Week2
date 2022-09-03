@@ -1,4 +1,3 @@
-import { leftRight } from "../Components/paddle.js";
 export class MoveBallCommand {
     constructor(ball) {
         this.ball = ball;
@@ -8,6 +7,7 @@ export class MoveBallCommand {
         this.vy = this.ball.vy;
     }
     execute() {
+        console.log(this.ball.x + " " + this.ball.y);
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.ball.draw();
@@ -30,37 +30,29 @@ export class CommandList {
     }
 }
 export class MovePaddle {
-    constructor(paddle, leftRightActon) {
+    constructor(paddle) {
         this.paddle = paddle;
-        this.leftRightActon = leftRightActon;
         this.x = this.paddle.x;
         this.vx = this.paddle.vx;
     }
     execute() {
-        console.log(this.leftRightActon);
         this.x = this.paddle.x;
-        if (this.leftRightActon == leftRight.left) {
-            this.paddle.x -= this.vx;
-        }
-        else if (this.leftRightActon == leftRight.right) {
-            this.paddle.x += this.vx;
-        }
-        else { }
-        this.paddle.update();
-        this.paddle.draw();
     }
     undo() {
         this.paddle.x = this.x;
-        this.paddle.draw();
     }
 }
 export class BlowBrickCommand {
-    constructor(brick, ctx) {
-        this.brick = brick;
-        this.ctx = ctx;
+    constructor(bricks, i) {
+        this.bricks = bricks;
+        this.i = i;
     }
     execute() {
+        this.blownBrick = this.bricks[this.i];
+        this.bricks.splice(this.i, 1);
+        this.bricks.forEach(brick => brick.draw());
     }
     undo() {
+        this.bricks.splice(this.i, 0, this.blownBrick);
     }
 }

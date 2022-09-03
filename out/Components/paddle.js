@@ -23,10 +23,10 @@ export class Paddle {
             this.x += this.vx;
     }
     update() {
+        this.draw();
     }
     draw() {
         let ctx = this.canvas.getContext('2d');
-        console.log("paddle draw");
         ctx.fillStyle = 'black';
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }

@@ -19,6 +19,7 @@ export class MoveBallCommand implements Command{
         this.vy = this.ball.vy;
     }
     execute():void{
+        console.log(this.ball.x+" "+this.ball.y);
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.ball.draw();
@@ -47,36 +48,33 @@ export class MovePaddle{
     private x:number;
     private y:number;
     private vx:number;
-    constructor(private readonly paddle:Paddle, private readonly leftRightActon : leftRight){
+    constructor(private readonly paddle:Paddle){
         this.x = this.paddle.x;
         this.vx = this.paddle.vx;
     }
     execute():void{
-        console.log(this.leftRightActon);
+        
         this.x = this.paddle.x;
-        if(this.leftRightActon == leftRight.left){
-            this.paddle.x -= this.vx;
-        }
-        else if(this.leftRightActon == leftRight.right){
-            this.paddle.x += this.vx;
-        }
-        else{}
-        this.paddle.update();
-        this.paddle.draw();
+        
     }
     undo():void{
         this.paddle.x = this.x;
-        this.paddle.draw();
+        
     }
 }
 export class BlowBrickCommand{
-    constructor(private readonly brick:Brick, private readonly ctx: CanvasRenderingContext2D){
+    private blownBrick : Brick;
+    constructor(private bricks:Array<Brick>, private readonly i:number){
 
     }
-    execute():void{
 
+    execute():void{
+        this.blownBrick = this.bricks[this.i];
+        this.bricks.splice(this.i, 1);
+        this.bricks.forEach(brick => brick.draw());
     }
     undo():void{
-
+        
+        this.bricks.splice(this.i, 0, this.blownBrick);
     }
 }
