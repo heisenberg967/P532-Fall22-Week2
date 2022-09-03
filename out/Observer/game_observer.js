@@ -10,18 +10,18 @@ export class Game {
         this.numRows = 8;
         let left = (this.canvas.width - (this.numBricks * ((new Brick(this.canvas)).width))) / 2;
         let offset = this.canvas.height / (this.numRows * 3);
-        this.paddle = new Paddle(this.canvas);
-        this.ball = new Ball(this.canvas);
+        this.paddle = new Paddle(this.canvas, this.canvas.width / 2);
+        this.ball = new Ball(this.canvas, this.canvas.width / 2, this.canvas.height / 2);
         this.bricks = this.computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
         this.points = new Points(this.canvas);
         this.commands = [];
     }
     ;
     drawBricks(ctx) {
-        this.bricks.forEach((brick) => brick.draw(ctx));
+        this.bricks.forEach((brick) => brick.draw());
     }
-    update(gameState) {
-        this.gameState = gameState;
+    update() {
+        //this.gameState = gameState;
         this.draw(this.canvas.getContext('2d'));
     }
     movePaddleLeft() {

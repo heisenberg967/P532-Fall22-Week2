@@ -1,12 +1,16 @@
 export class Ball {
-    constructor(canvas) {
+    constructor(canvas, x, y) {
         this.canvas = canvas;
-        this.x = this.canvas.width / 2;
-        this.y = this.canvas.height / 2;
+        this.x = x;
+        this.y = y;
         this.vx = 4;
         this.vy = 4;
         this.radius = 10;
         this.color = 'blue';
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
     }
     draw() {
         console.log("ball draw");

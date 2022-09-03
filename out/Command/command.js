@@ -1,4 +1,5 @@
-export class MoveCommand {
+import { leftRight } from "../Components/paddle.js";
+export class MoveBallCommand {
     constructor(ball) {
         this.ball = ball;
         this.x = this.ball.x;
@@ -7,16 +8,13 @@ export class MoveCommand {
         this.vy = this.ball.vy;
     }
     execute() {
-        this.ball.x += this.ball.vx;
-        this.ball.y += this.ball.vy;
+        this.x = this.ball.x;
+        this.y = this.ball.y;
         this.ball.draw();
     }
     undo() {
         this.ball.x = this.x;
         this.ball.y = this.y;
-        this.ball.vx = this.vx;
-        this.ball.vy = this.vy;
-        console.log(this.ball.x + ":" + this.ball.y + ":" + this.ball.vx + ":" + this.ball.vy);
         this.ball.draw();
     }
 }
@@ -32,29 +30,28 @@ export class CommandList {
     }
 }
 export class MovePaddle {
-    constructor(paddle, leftRight = 0, ctx) {
+    constructor(paddle, leftRightActon) {
         this.paddle = paddle;
-        this.leftRight = leftRight;
-        this.ctx = ctx;
+        this.leftRightActon = leftRightActon;
         this.x = this.paddle.x;
-        this.y = this.paddle.y;
         this.vx = this.paddle.vx;
     }
     execute() {
+        console.log(this.leftRightActon);
         this.x = this.paddle.x;
-        this.y = this.paddle.y;
-        if (this.leftRight == 0) {
+        if (this.leftRightActon == leftRight.left) {
             this.paddle.x -= this.vx;
         }
-        else if (this.leftRight == 1) {
+        else if (this.leftRightActon == leftRight.right) {
             this.paddle.x += this.vx;
         }
         else { }
-        this.paddle.draw(this.ctx);
+        this.paddle.update();
+        this.paddle.draw();
     }
     undo() {
         this.paddle.x = this.x;
-        this.paddle.draw(this.ctx);
+        this.paddle.draw();
     }
 }
 export class BlowBrickCommand {

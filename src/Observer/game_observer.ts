@@ -3,7 +3,7 @@ import {Paddle, leftRight} from "../Components/paddle.js";
 import {Brick} from "../Components/brick.js";
 import {Points} from "../Components/points.js"
 import {Sprite} from "observer";
-import { Command, MoveCommand, MovePaddle } from "../Command/command.js";
+import { Command, MoveBallCommand, MovePaddle } from "../Command/command.js";
 import {state} from "../Observable/observable.js";
 
 export class Game implements Sprite{
@@ -13,8 +13,8 @@ export class Game implements Sprite{
         this.numRows = 8;
         let left : number = (this.canvas.width - (this.numBricks*((new Brick(this.canvas)).width)))/2;
 		let offset : number = this.canvas.height / (this.numRows*3);
-        this.paddle = new Paddle(this.canvas);
-        this.ball = new Ball(this.canvas);
+        this.paddle = new Paddle(this.canvas, this.canvas.width/2);
+        this.ball = new Ball(this.canvas, this.canvas.width/2, this.canvas.height/2);
         this.bricks = this.computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
         this.points = new Points(this.canvas);
 		this.commands = [];

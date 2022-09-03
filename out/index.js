@@ -1,9 +1,9 @@
 import { Game } from "./Observer/game_observer.js";
 import { Clock } from "./Observer/clock_observer.js";
-import { Observable, state } from "./Observable/observable.js";
+import { Observable } from "./Observable/observable.js";
 import { Ball } from "./Components/ball.js";
-import { MoveCommand, MovePaddle } from "./Command/command.js";
-import { leftRight } from "./Components/paddle.js";
+import { MoveBallCommand, MovePaddle } from "./Command/command.js";
+import { Paddle, leftRight } from "./Components/paddle.js";
 let leftRightActions = [];
 window.addEventListener('keydown', (e) => {
     switch (e.key) {
@@ -25,17 +25,22 @@ window.addEventListener('keydown', (e) => {
 });
 var intervalId;
 document.getElementById("start").addEventListener('click', () => {
-    obs.detach(game);
-    game = new Game(gameCanvas);
-    obs.attach(game);
+    clearInterval(intervalId);
+    obs.detach(ball);
+    obs.detach(paddle);
+    ball = new Ball(gameCanvas, gameCanvas.width / 2, gameCanvas.height / 2);
+    paddle = new Paddle(gameCanvas, gameCanvas.width / 2);
+    obs.attach(ball);
+    obs.attach(paddle);
     intervalId = setInterval(() => {
-        game.commands.push(new MoveCommand(game.ball));
-        if (leftRightActions.length == 0)
-            game.commands.push(new MovePaddle(game.paddle, leftRight.none, gameCanvas.getContext('2d')));
-        else {
-            game.commands.push(new MovePaddle(game.paddle, leftRightActions.pop(), gameCanvas.getContext('2d')));
-        }
-        obs.changeState(state.do);
+        obs.changeState(); // the ball and paddle positions get updated
+        gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        let move = new MoveBallCommand(new Ball(gameCanvas, ball.x, ball.y));
+        let paddleMove = new MovePaddle(new Paddle(gameCanvas, paddle.x), leftRightActions.length > 0 ? leftRightActions.pop() : leftRight.none);
+        move.execute();
+        paddleMove.execute();
+        ballCommands.push(move);
+        paddleCommands.push(paddleMove);
     }, 100);
 });
 document.getElementById("pause").addEventListener('click', () => {
@@ -46,26 +51,39 @@ document.getElementById("pause").addEventListener('click', () => {
 });
 document.getElementById("resume").addEventListener('click', () => {
     intervalId = setInterval(() => {
-        game.commands.push(new MoveCommand(game.ball));
-        obs.changeState(state.do);
+        game.commands.push(new MoveBallCommand(game.ball));
+        obs.changeState();
     }, 100);
 });
 document.getElementById("undo").addEventListener('click', () => {
-    obs.changeState(state.undo);
+    gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    ballCommands.pop().undo();
+    paddleCommands.pop().undo();
 });
 document.getElementById("replay").addEventListener('click', () => {
-    game.commands.forEach(command => {
-        setTimeout(command.execute);
-    });
+    for (let i = 0; i < ballCommands.length; i++) {
+        let ballMove = Object.create(ballCommands[i]);
+        let paddleMove = Object.create(paddleCommands[i]);
+        setTimeout(() => {
+            gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            ballMove.execute();
+            paddleMove.execute();
+        }, 100);
+    }
 });
 let gameCanvas = document.getElementById('game-canvas');
 let clockCanvas = document.getElementById('clock-canvas');
 let game = new Game(gameCanvas);
 let clock = new Clock(clockCanvas);
-let ball = new Ball(gameCanvas);
+let ball = new Ball(gameCanvas, gameCanvas.width / 2, gameCanvas.height / 2);
+let ballCommands = [];
+let paddle = new Paddle(gameCanvas, gameCanvas.width / 2);
+let paddleCommands = [];
 let obs = new Observable();
-obs.attach(game);
-obs.attach(clock);
+ball.draw();
+paddle.draw();
+clock.update();
+//obs.changeState(); // initial drawing
 //obs.attach(ball);
 // 1st method of changing state - time units
 //setInterval(()=>obs.changeState(gameState), 100);

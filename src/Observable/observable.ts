@@ -6,7 +6,7 @@ export enum state{
 }
 export class Observable{
     private sprites:Array<Sprite> = [];
-    changeState(state: state):void{
+    changeState():void{
         
         this.sprites.forEach(spr => spr.update())
     }

@@ -8,12 +8,12 @@ export class Brick {
         this.ctx = canvas.getContext('2d');
     }
     update() {
-        this.draw(this.ctx);
+        this.draw();
     }
-    draw(ctx) {
-        this.drawBorder(ctx, this.left, this.top, this.width, this.height);
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.left, this.top, this.width, this.height);
+    draw() {
+        this.drawBorder(this.ctx, this.left, this.top, this.width, this.height);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect(this.left, this.top, this.width, this.height);
     }
     drawBorder(ctx, xPos, yPos, width, height, thickness = 2) {
         ctx.fillStyle = '#000';

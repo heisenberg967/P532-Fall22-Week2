@@ -2,11 +2,12 @@ import { Ball } from "../Components/ball.js";
 import { Brick } from "../Components/brick.js";
 import { Paddle } from "../Components/paddle.js";
 import {Sprite} from "../Observer/observer.js";
+import { leftRight } from "../Components/paddle.js";
 export interface Command{
     execute() : void;
     undo(): void;
 }
-export class MoveCommand implements Command{
+export class MoveBallCommand implements Command{
     private x:number;
     private y:number;
     private vx:number;
@@ -18,17 +19,14 @@ export class MoveCommand implements Command{
         this.vy = this.ball.vy;
     }
     execute():void{
-        this.ball.x += this.ball.vx;
-        this.ball.y += this.ball.vy;
+        this.x = this.ball.x;
+        this.y = this.ball.y;
         this.ball.draw();
     }
     undo():void{
         
         this.ball.x = this.x;
         this.ball.y = this.y;
-        this.ball.vx = this.vx;
-        this.ball.vy = this.vy;
-        console.log(this.ball.x+":"+this.ball.y+":"+this.ball.vx+":"+this.ball.vy);
         this.ball.draw();
     }
 }
@@ -49,22 +47,21 @@ export class MovePaddle{
     private x:number;
     private y:number;
     private vx:number;
-    constructor(private readonly paddle:Paddle, private readonly leftRight:number = 0, 
-        private readonly ctx: CanvasRenderingContext2D){
+    constructor(private readonly paddle:Paddle, private readonly leftRightActon : leftRight){
         this.x = this.paddle.x;
-        this.y = this.paddle.y;
         this.vx = this.paddle.vx;
     }
     execute():void{
+        console.log(this.leftRightActon);
         this.x = this.paddle.x;
-        this.y = this.paddle.y;
-        if(this.leftRight == 0){
+        if(this.leftRightActon == leftRight.left){
             this.paddle.x -= this.vx;
         }
-        else if(this.leftRight == 1){
+        else if(this.leftRightActon == leftRight.right){
             this.paddle.x += this.vx;
         }
-        else {}
+        else{}
+        this.paddle.update();
         this.paddle.draw();
     }
     undo():void{

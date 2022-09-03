@@ -7,10 +7,10 @@ export enum leftRight{
     none,
 }
 export class Paddle implements Sprite{
-    constructor(canvas : HTMLCanvasElement)
+    constructor(canvas : HTMLCanvasElement, x:number)
     {
         this.canvas = canvas;
-        this.x = canvas.width/2;
+        this.x = x;
         this.y = canvas.height - (canvas.height/20);
         this.width = 80;
         this.height = 10;
@@ -32,11 +32,11 @@ export class Paddle implements Sprite{
         this.x += this.vx;
 }
     update(): void {
-        this.draw();
+        
     }
    draw(){
     let ctx = this.canvas.getContext('2d');
-    console.log("paddle draw");
+    
     ctx.fillStyle = 'black';
     ctx.fillRect(this.x, this.y, this.width, this.height);
    }

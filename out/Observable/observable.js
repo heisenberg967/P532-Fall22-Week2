@@ -8,8 +8,8 @@ export class Observable {
     constructor() {
         this.sprites = [];
     }
-    changeState(state) {
-        this.sprites.forEach(spr => spr.update(state));
+    changeState() {
+        this.sprites.forEach(spr => spr.update());
     }
     attach(sprite) {
         if (!this.sprites.some((e) => e == sprite))
