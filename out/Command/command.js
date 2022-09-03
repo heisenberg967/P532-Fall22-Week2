@@ -54,5 +54,6 @@ export class BlowBrickCommand {
     }
     undo() {
         this.bricks.splice(this.i, 0, this.blownBrick);
+        this.bricks.forEach(brick => brick.draw());
     }
 }

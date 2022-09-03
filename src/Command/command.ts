@@ -72,9 +72,11 @@ export class BlowBrickCommand{
         this.blownBrick = this.bricks[this.i];
         this.bricks.splice(this.i, 1);
         this.bricks.forEach(brick => brick.draw());
+        
     }
     undo():void{
         
         this.bricks.splice(this.i, 0, this.blownBrick);
+        this.bricks.forEach(brick => brick.draw());
     }
 }
