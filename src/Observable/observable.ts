@@ -8,7 +8,7 @@ export class Observable{
     private sprites:Array<Sprite> = [];
     changeState(state: state):void{
         
-        this.sprites.forEach(spr => spr.update(state))
+        this.sprites.forEach(spr => spr.update())
     }
     attach(sprite:Sprite){
     if(!this.sprites.some((e)=> e==sprite))

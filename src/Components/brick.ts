@@ -16,13 +16,14 @@ export class Brick implements Sprite{
 	width :number;
 	height : number;
     update(): void {
-        this.draw(this.ctx);
+        this.draw();
     }
-    draw(ctx:CanvasRenderingContext2D):void{
-        this.drawBorder(ctx, this.left, this.top, this.width, this.height);
+    draw():void{
         
-		ctx.fillStyle = this.color;
-        ctx.fillRect(this.left, this.top, this.width, this.height);
+        this.drawBorder(this.ctx, this.left, this.top, this.width, this.height);
+        
+		this.ctx.fillStyle = this.color;
+        this.ctx.fillRect(this.left, this.top, this.width, this.height);
     }
     private drawBorder(ctx : CanvasRenderingContext2D, xPos:number, yPos:number, width:number, height:number, thickness : number = 2){
             ctx.fillStyle='#000';

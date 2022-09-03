@@ -2,29 +2,9 @@ import { Ball } from "../Components/ball.js";
 import { Paddle } from "../Components/paddle.js";
 import { Brick } from "../Components/brick.js";
 import { Points } from "../Components/points.js";
-import { MoveCommand } from "../Command/command.js";
 import { state } from "../Observable/observable.js";
-function computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numBricks = 25) {
-    let bricks = [];
-    let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow'];
-    for (let j = 0; j < numRows; j++) {
-        let tmp_left = left;
-        for (let i = 0; i < numBricks; i++) {
-            let new_brick = new Brick(canvas);
-            tmp_left = tmp_left + new_brick.width;
-            new_brick.left = tmp_left;
-            new_brick.top = offset;
-            new_brick.color = colors[j];
-            bricks.push(new_brick);
-        }
-        let tmp_brick = new Brick(canvas);
-        offset = offset + tmp_brick.height + 2;
-    }
-    return bricks;
-}
 export class Game {
     constructor(canvas) {
-        this.speed = 50;
         this.canvas = canvas;
         this.numBricks = 25;
         this.numRows = 8;
@@ -32,7 +12,7 @@ export class Game {
         let offset = this.canvas.height / (this.numRows * 3);
         this.paddle = new Paddle(this.canvas);
         this.ball = new Ball(this.canvas);
-        this.bricks = computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
+        this.bricks = this.computeBrickPositions(this.canvas, left, offset, this.numRows, this.numBricks);
         this.points = new Points(this.canvas);
         this.commands = [];
     }
@@ -44,16 +24,16 @@ export class Game {
         this.gameState = gameState;
         this.draw(this.canvas.getContext('2d'));
     }
-    movePaddleLeft(amt) {
-        this.paddle.moveLeft(amt);
+    movePaddleLeft() {
+        this.paddle.moveLeft();
     }
-    movePaddleRight(amt) {
-        this.paddle.moveRight(amt);
+    movePaddleRight() {
+        this.paddle.moveRight();
     }
     draw(ctx) {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBricks(ctx);
-        this.paddle.update();
+        //this.paddle.update();
         this.points.update();
         if (this.gameState == state.do) {
             /** collisions*/
@@ -97,7 +77,7 @@ export class Game {
                 }
             }
             ;
-            this.commands.push(new MoveCommand(this.ball));
+            this.commands[this.commands.length - 2].execute();
             this.commands[this.commands.length - 1].execute();
         }
         else if (this.gameState == state.undo) {
@@ -111,5 +91,23 @@ export class Game {
                 console.log(this.commands.length);
             }
         }
+    }
+    computeBrickPositions(canvas, left = 80, offset = 10, numRows = 8, numBricks = 25) {
+        let bricks = [];
+        let colors = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow'];
+        for (let j = 0; j < numRows; j++) {
+            let tmp_left = left;
+            for (let i = 0; i < numBricks; i++) {
+                let new_brick = new Brick(canvas);
+                tmp_left = tmp_left + new_brick.width;
+                new_brick.left = tmp_left;
+                new_brick.top = offset;
+                new_brick.color = colors[j];
+                bricks.push(new_brick);
+            }
+            let tmp_brick = new Brick(canvas);
+            offset = offset + tmp_brick.height + 2;
+        }
+        return bricks;
     }
 }

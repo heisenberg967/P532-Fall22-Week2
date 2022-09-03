@@ -2,23 +2,28 @@ import {Game} from "./Observer/game_observer.js"
 import {Clock} from "./Observer/clock_observer.js"
 import {Observable, state} from "./Observable/observable.js"
 import { Ball } from "./Components/ball.js";
+import { MoveCommand, MovePaddle } from "./Command/command.js";
+import {Paddle, leftRight} from "./Components/paddle.js";
 
 
+let leftRightActions:Array<leftRight> = [];
 window.addEventListener('keydown', (e)=>
 {
     switch(e.key){
         case "d": 
-    	    game.movePaddleRight(5);
+            leftRightActions.push(leftRight.right);
     	    break;
      	case "a": 
-            game.movePaddleLeft(5);
+            leftRightActions.push(leftRight.left);
     	    break;
 
     	case "ArrowRight": 
-            game.movePaddleRight(5);
+            console.log("move right");
+            leftRightActions.push(leftRight.right);
     	    break;
     	case "ArrowLeft":
-    	    game.movePaddleLeft(5);
+            console.log("move left");
+    	    leftRightActions.push(leftRight.left);
     	    break;
         }
 });
@@ -28,7 +33,17 @@ document.getElementById("start").addEventListener('click', ()=>{
     obs.detach(game);
     game = new Game(gameCanvas);
     obs.attach(game);
-    intervalId = setInterval(()=> obs.changeState(state.do), 100);
+    intervalId = setInterval(()=>{
+        game.commands.push(new MoveCommand(game.ball));
+        if(leftRightActions.length == 0)
+            game.commands.push(new MovePaddle(game.paddle, leftRight.none,
+        gameCanvas.getContext('2d')));
+        else{
+            game.commands.push(new MovePaddle(game.paddle, leftRightActions.pop(),
+        gameCanvas.getContext('2d')));
+        }
+            obs.changeState(state.do);
+    }, 100);
     
 });
 document.getElementById("pause").addEventListener('click', ()=>{
@@ -38,13 +53,20 @@ document.getElementById("pause").addEventListener('click', ()=>{
     }
 });
 document.getElementById("resume").addEventListener('click', ()=>{
-    intervalId = setInterval(()=> obs.changeState(state.do), 100);
+    intervalId = setInterval(()=> {
+        game.commands.push(new MoveCommand(game.ball));
+        obs.changeState(state.do);
+
+    }, 100);
 });
 document.getElementById("undo").addEventListener('click', ()=>{
     obs.changeState(state.undo);
 });
 document.getElementById("replay").addEventListener('click', ()=>{
-    intervalId = setInterval(()=> obs.changeState(state.replay), 100);
+    game.commands.forEach(command => {
+        
+        setTimeout(command.execute);
+    });
 });
 
 let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;

@@ -7,10 +7,6 @@ export class MoveCommand {
         this.vy = this.ball.vy;
     }
     execute() {
-        this.ball.x = this.x;
-        this.ball.y = this.y;
-        this.ball.vx = this.vx;
-        this.ball.vy = this.vy;
         this.ball.x += this.ball.vx;
         this.ball.y += this.ball.vy;
         this.ball.draw();
@@ -24,15 +20,41 @@ export class MoveCommand {
         this.ball.draw();
     }
 }
-export class MovePaddleCommand {
-    constructor(paddle, ctx) {
-        this.paddle = paddle;
-        this.ctx = ctx;
+export class CommandList {
+    constructor() {
+        this.commands = [];
     }
     execute() {
+        setInterval(() => this.commands.forEach(command => command.execute()), this.speed);
+    }
+    undo() {
+        this.commands.pop().execute();
+    }
+}
+export class MovePaddle {
+    constructor(paddle, leftRight = 0, ctx) {
+        this.paddle = paddle;
+        this.leftRight = leftRight;
+        this.ctx = ctx;
+        this.x = this.paddle.x;
+        this.y = this.paddle.y;
+        this.vx = this.paddle.vx;
+    }
+    execute() {
+        this.x = this.paddle.x;
+        this.y = this.paddle.y;
+        if (this.leftRight == 0) {
+            this.paddle.x -= this.vx;
+        }
+        else if (this.leftRight == 1) {
+            this.paddle.x += this.vx;
+        }
+        else { }
         this.paddle.draw(this.ctx);
     }
     undo() {
+        this.paddle.x = this.x;
+        this.paddle.draw(this.ctx);
     }
 }
 export class BlowBrickCommand {

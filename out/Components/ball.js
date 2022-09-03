@@ -9,6 +9,7 @@ export class Ball {
         this.color = 'blue';
     }
     draw() {
+        console.log("ball draw");
         let ctx = this.canvas.getContext('2d');
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
