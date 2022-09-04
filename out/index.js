@@ -31,8 +31,7 @@ function resume() {
             ball.vx = -ball.vx;
         if ((ball.y <= 0) || ball.y >= gameCanvas.height)
             ball.vy = -ball.vy;
-        let brickBlown = false;
-        let blowBrick = new BlowBrickCommand(bricks);
+        let brickBlown = -1;
         /** collision with brick wall*/
         for (let i = 0; i < bricks.length; i++) {
             if (ball.x >= bricks[i].left
@@ -41,14 +40,13 @@ function resume() {
                 && ball.y <= (bricks[i].top + bricks[i].height)) {
                 console.log("num bricks outside:");
                 console.log(bricks.length);
-                bricks.splice(i, 1);
+                brickBlown = i;
                 console.log(bricks.length);
-                blowBrick.setNewBricks(bricks);
                 ball.vy = -ball.vy;
-                brickBlown = true;
                 break;
             }
         }
+        let blowBrick = new BlowBrickCommand(bricks, brickBlown);
         blowBrick.execute(); // draws the leftover bricks
         cmdList.commands.push(blowBrick);
         console.log('index ball x y');

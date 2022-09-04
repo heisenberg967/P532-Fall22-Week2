@@ -64,22 +64,25 @@ export class MovePaddle {
     }
 }
 export class BlowBrickCommand {
-    constructor(oldBricks) {
-        this.oldBricks = oldBricks;
-        this.newBricks = [];
-        this.oldBricks.forEach(brick => this.newBricks.push(brick));
+    constructor(bricks, brickBlownIndex) {
+        this.bricks = bricks;
+        this.brickBlownIndex = brickBlownIndex;
     }
-    setNewBricks(bricks) {
-        this.newBricks = [];
-        bricks.forEach(brick => this.newBricks.push(brick));
-        console.log("num Bricks inside:");
-        console.log(this.oldBricks.length);
-        console.log(this.newBricks.length);
-    }
+    // setNewBricks(bricks:Array<Brick>):void{
+    //     this.newBricks = [];
+    //     bricks.forEach(brick => this.newBricks.push(brick));
+    //     console.log("num Bricks inside:");
+    //     console.log(this.oldBricks.length);
+    //     console.log(this.newBricks.length);
+    // }
     execute() {
-        this.newBricks.forEach(brick => brick.draw());
+        this.savedBricks = [...this.bricks];
+        if (this.brickBlownIndex != -1) {
+            this.bricks.splice(this.brickBlownIndex, 1);
+        }
+        this.bricks.forEach(brick => brick.draw());
     }
     undo() {
-        this.oldBricks.forEach(brick => brick.draw());
+        this.savedBricks.forEach(brick => brick.draw());
     }
 }
