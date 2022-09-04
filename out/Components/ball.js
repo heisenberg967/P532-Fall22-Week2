@@ -9,10 +9,18 @@ export class Ball {
         this.color = 'blue';
     }
     update() {
+        console.log('ball update x y');
+        console.log(this.x);
+        console.log(this.y);
         this.x += this.vx;
         this.y += this.vy;
     }
     draw() {
+        // console.log('ball draw x and y and canvas x y:');
+        // console.log(this.x);
+        // console.log(this.y);
+        // console.log(this.canvas.height);
+        // console.log(this.canvas.width);
         let ctx = this.canvas.getContext('2d');
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);

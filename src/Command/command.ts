@@ -5,26 +5,26 @@ import {Sprite} from "../Observer/observer.js";
 import { leftRight } from "../Components/paddle.js";
 import { Clock } from "../Observer/clock_observer.js";
 
-export enum commandTypes {
-    Ball,
-    Paddle,
-    Brick,
-    Clock
-}
+// export enum commandTypes {
+//     Ball,
+//     Paddle,
+//     Brick,
+//     Clock
+// }
 
 export interface Command{
     execute() : void;
     undo(): void;
-    commandType: commandTypes;
+    
 }
 
 
 export class ClockTick implements Command{
     private time: number;
-    commandType!: commandTypes;
+    
     constructor(private clock:Clock){
         this.time = 0;
-        this.commandType = commandTypes.Clock;
+    
     }
     execute():void{
         
@@ -45,14 +45,14 @@ export class MoveBallCommand implements Command{
     private y:number;
     private vx:number;
     private vy:number;
-    commandType!: commandTypes;
+    
 
     constructor(private readonly ball : Ball){
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.vx = this.ball.vx;
         this.vy = this.ball.vy;
-        this.commandType = commandTypes.Ball;
+        
     }
     execute():void{
         
@@ -75,29 +75,31 @@ export class MoveBallCommand implements Command{
     }
 }
 export class CommandList implements Command{
-    constructor(){
+    constructor(private canvas:HTMLCanvasElement){
         this.commands = [];
+        this.speed = 80;
     }
-    commandType: commandTypes;
+    
     commands : Array<Command>;
     speed : number;
+    // replays the uploaded commands
     execute(): void {
         setInterval(()=>this.commands.forEach(command=>command.execute()), this.speed);
     }
     undo(): void {
-        this.commands.pop().execute();
+        this.commands.forEach(command=>command.undo());
     }
 }
 export class MovePaddle{
     private x:number;
     private y:number;
     private vx:number;
-    commandType!: commandTypes;
+    
 
     constructor(private paddle:Paddle){
         this.x = this.paddle.x;
         this.vx = this.paddle.vx;
-        this.commandType = commandTypes.Paddle;
+        
     }
     execute():void{
         
@@ -115,25 +117,26 @@ export class MovePaddle{
     }
 }
 export class BlowBrickCommand{
-    private blownBrick : Brick;
-    commandType!: commandTypes;
-
-    constructor(private bricks:Array<Brick>, private readonly i:number){
-        this.commandType = commandTypes.Brick;
+    
+    
+    private newBricks : Array<Brick>;
+    constructor(private oldBricks:Array<Brick>){
+        
+        this.newBricks = oldBricks;
     }
-
+    setNewBricks(bricks:Array<Brick>):void{
+        this.newBricks = bricks;
+    }
     execute():void{
-        this.blownBrick = this.bricks[this.i];
-        this.bricks.splice(this.i, 1);
-        this.bricks.forEach(brick => brick.draw());
+        
+        this.newBricks.forEach(brick => brick.draw());
     }
     undo():void{
         
-        this.bricks.splice(this.i, 0, this.blownBrick);
-        this.bricks.forEach(brick => brick.draw());
+        this.oldBricks.forEach(brick => brick.draw());
     }
 
     getBricks(): Array<Brick> {
-        return this.bricks;
+        return this.oldBricks;
     }
 }

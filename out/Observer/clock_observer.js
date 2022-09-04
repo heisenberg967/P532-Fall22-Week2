@@ -6,6 +6,8 @@ export class Clock {
     ;
     update() {
         this.time += 1;
+    }
+    draw() {
         let secs = (this.time / 10);
         let ctx = this.canvas.getContext('2d');
         let h = Math.floor(secs / 3600);

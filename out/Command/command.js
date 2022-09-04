@@ -1,3 +1,20 @@
+export class ClockTick {
+    constructor(clock) {
+        this.clock = clock;
+        this.time = 0;
+    }
+    execute() {
+        this.time = this.clock.time;
+        this.clock.draw();
+    }
+    undo() {
+        this.clock.time = this.time;
+        this.clock.draw();
+    }
+    getTime() {
+        return this.clock;
+    }
+}
 export class MoveBallCommand {
     constructor(ball) {
         this.ball = ball;
@@ -7,9 +24,11 @@ export class MoveBallCommand {
         this.vy = this.ball.vy;
     }
     execute() {
-        console.log(this.ball.x + " " + this.ball.y);
+        //console.log(this.ball.x+" "+this.ball.y);
         this.x = this.ball.x;
         this.y = this.ball.y;
+        // console.log('moveballcmd execute');
+        // console.log(this.x);
         this.ball.draw();
     }
     undo() {
@@ -17,16 +36,22 @@ export class MoveBallCommand {
         this.ball.y = this.y;
         this.ball.draw();
     }
+    getBall() {
+        return this.ball;
+    }
 }
 export class CommandList {
-    constructor() {
+    constructor(canvas) {
+        this.canvas = canvas;
         this.commands = [];
+        this.speed = 80;
     }
+    // replays the uploaded commands
     execute() {
         setInterval(() => this.commands.forEach(command => command.execute()), this.speed);
     }
     undo() {
-        this.commands.pop().execute();
+        this.commands.forEach(command => command.undo());
     }
 }
 export class MovePaddle {
@@ -43,23 +68,25 @@ export class MovePaddle {
         this.paddle.x = this.x;
         this.paddle.draw();
     }
+    getPaddle() {
+        return this.paddle;
+    }
 }
 export class BlowBrickCommand {
-    constructor(bricks, i) {
-        this.bricks = bricks;
-        this.i = i;
+    constructor(oldBricks) {
+        this.oldBricks = oldBricks;
+        this.newBricks = oldBricks;
+    }
+    setNewBricks(bricks) {
+        this.newBricks = bricks;
     }
     execute() {
-        if (this.i == -1) {
-        }
-        else {
-            this.blownBrick = this.bricks[this.i];
-            this.bricks.splice(this.i, 1);
-        }
-        this.bricks.forEach(brick => brick.draw());
+        this.newBricks.forEach(brick => brick.draw());
     }
     undo() {
-        this.bricks.splice(this.i, 0, this.blownBrick);
-        this.bricks.forEach(brick => brick.draw());
+        this.oldBricks.forEach(brick => brick.draw());
+    }
+    getBricks() {
+        return this.oldBricks;
     }
 }
