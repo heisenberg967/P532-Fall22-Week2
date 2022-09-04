@@ -6,19 +6,21 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run lite",
-    "lite":"lite-server"
+    "lite": "lite-server"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VijayIyer/breakout.git"
+    "url": "git+https://github.iu.edu/P532-OOSD/f22-week2-team1.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/VijayIyer/breakout/issues"
+    "url": "https://github.iu.edu/P532-OOSD/f22-week2-team1/Issues"
   },
-  "homepage": "https://github.com/VijayIyer/breakout#readme",
-  "dependencies": {
-    "lite-server": "^2.6.1"
-  }
+  "homepage": "https://github.iu.edu/P532-OOSD/f22-week2-team1#readme",
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {}
 }
