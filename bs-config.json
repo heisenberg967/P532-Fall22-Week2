@@ -1,0 +1,3 @@
+{
+    "files": ["./out/**/*.{html,htm,css,js}"]
+}

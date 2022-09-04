@@ -1,0 +1,25 @@
+{
+  "name": "breakout",
+  "version": "1.0.0",
+  "description": "Breakout game using various design patterns",
+  "main": "out/index.js",
+  "scripts": {
+    "start": "npm run lite",
+    "lite" : "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VikramDKolla/Breakout.git"
+  },
+  "keywords": [],
+  "author": "Vikram Devesh Kolla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VikramDKolla/Breakout/issues"
+  },
+  "homepage": "https://github.com/VikramDKolla/Breakout#readme",
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Breakout</title>
+	<link rel="shortcut icon" href="#"> <!--404 GET /favicon.ico apparentlt stops after this line is placed in head. I guess it workds because i didnt provide any icon for the title-->
+	<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+	<div>
+		<div class ="title">Breakout</div>
+		<canvas id="game-canvas" height="500" width="1000" class = "game"></canvas>
+		<!-- <canvas id="clock-canvas" class="canvas" height="50" width="80" style="border:1px solid; top:50px;left:1200px"></canvas> -->
+		<div class = "flex-container">
+			<div><button id="start" class = "but">Start</button></div>
+			<div><button id="pause" class = "but">Pause</button></div>
+			<div><button id="resume" class = "but">Resume</button></div>
+			<div><button id="undo" class = "but">Undo</button></div>
+			<div><button id="replay" class = "but">Replay</button></div>
+		</div>
+	</div>
+	<script src = "out/index.js"></script>
+</body>
+</html>

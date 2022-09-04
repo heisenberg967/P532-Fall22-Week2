@@ -1,0 +1,1 @@
+{"version":3,"file":"brickblowcommand.js","sourceRoot":"","sources":["../src/brickblowcommand.ts"],"names":[],"mappings":";;AAKA,MAAM,gBAAgB;IAElB,OAAO,CAAC,KAAa;QACnB,KAAK,CAAC,OAAO,GAAG,KAAK,CAAA;QACrB,4BAA4B;IAC9B,CAAC;IACD,IAAI,CAAC,KAAa;QACd,KAAK,CAAC,OAAO,GAAG,CAAC,KAAK,CAAC,OAAO,CAAA;IAClC,CAAC;CACJ"}
