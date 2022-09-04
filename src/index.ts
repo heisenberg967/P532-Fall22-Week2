@@ -69,7 +69,7 @@ function resume() {
         console.log(ball.x);
         console.log(ball.y);
         
-        let move = new MoveBallCommand(new Ball(gameCanvas, ball.x, ball.y));
+        let move = new MoveBallCommand(ball);
         move.execute();
         commands.push(move);
 
@@ -89,7 +89,7 @@ function resume() {
                     // console.log('left cmd');
                     paddle.x -= paddle.vx;
                 }
-                let paddleMove = new MovePaddle(new Paddle(gameCanvas,paddle.x));
+                let paddleMove = new MovePaddle(paddle);
                 paddleMove.execute();
                 commands.push(paddleMove);
             }
