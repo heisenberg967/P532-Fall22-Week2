@@ -19,7 +19,7 @@ export interface Command{
 }
 
 
-export class ClockTick{
+export class ClockTick implements Command{
     private time: number;
     commandType!: commandTypes;
     constructor(private clock:Clock){
@@ -29,12 +29,15 @@ export class ClockTick{
     execute():void{
         
         this.time = this.clock.time;
-        
-        
+        this.clock.draw();
     }
     undo():void{
         this.clock.time = this.time;
-        
+        this.clock.draw();
+    }
+
+    getTime(): Clock {
+        return this.clock;
     }
 }
 export class MoveBallCommand implements Command{
@@ -52,9 +55,12 @@ export class MoveBallCommand implements Command{
         this.commandType = commandTypes.Ball;
     }
     execute():void{
-        console.log(this.ball.x+" "+this.ball.y);
+        
+        //console.log(this.ball.x+" "+this.ball.y);
         this.x = this.ball.x;
         this.y = this.ball.y;
+        // console.log('moveballcmd execute');
+        // console.log(this.x);
         this.ball.draw();
     }
     undo():void{

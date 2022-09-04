@@ -18,11 +18,20 @@ export class Ball implements Sprite{
   radius: number;
   color: string;
   update(): void {
+    console.log('ball update x y');
+    console.log(this.x);
+    console.log(this.y);
       this.x += this.vx;
       this.y += this.vy;
   }
   draw() {
     
+    // console.log('ball draw x and y and canvas x y:');
+    // console.log(this.x);
+    // console.log(this.y);
+    // console.log(this.canvas.height);
+    // console.log(this.canvas.width);
+
     let ctx : CanvasRenderingContext2D = this.canvas.getContext('2d');
     
     ctx.beginPath();
