@@ -3,20 +3,32 @@ import { Brick } from "../Components/brick.js";
 import { Paddle } from "../Components/paddle.js";
 import {Sprite} from "../Observer/observer.js";
 import { leftRight } from "../Components/paddle.js";
+
+export enum commandTypes {
+    Ball,
+    Paddle,
+    Brick,
+    Clock
+}
+
 export interface Command{
     execute() : void;
     undo(): void;
+    commandType: commandTypes;
 }
 export class MoveBallCommand implements Command{
     private x:number;
     private y:number;
     private vx:number;
     private vy:number;
+    commandType!: commandTypes;
+
     constructor(private readonly ball : Ball){
         this.x = this.ball.x;
         this.y = this.ball.y;
         this.vx = this.ball.vx;
         this.vy = this.ball.vy;
+        this.commandType = commandTypes.Ball;
     }
     execute():void{
         console.log(this.ball.x+" "+this.ball.y);
@@ -30,11 +42,16 @@ export class MoveBallCommand implements Command{
         this.ball.y = this.y;
         this.ball.draw();
     }
+
+    getBall(): Ball {
+        return this.ball;
+    }
 }
 export class CommandList implements Command{
     constructor(){
         this.commands = [];
     }
+    commandType: commandTypes;
     commands : Array<Command>;
     speed : number;
     execute(): void {
@@ -48,9 +65,12 @@ export class MovePaddle{
     private x:number;
     private y:number;
     private vx:number;
+    commandType!: commandTypes;
+
     constructor(private paddle:Paddle){
         this.x = this.paddle.x;
         this.vx = this.paddle.vx;
+        this.commandType = commandTypes.Paddle;
     }
     execute():void{
         
@@ -62,27 +82,31 @@ export class MovePaddle{
         this.paddle.x = this.x;
         this.paddle.draw();
     }
+
+    getPaddle(): Paddle {
+        return this.paddle;
+    }
 }
 export class BlowBrickCommand{
     private blownBrick : Brick;
-    constructor(private bricks:Array<Brick>, private readonly i:number){
+    commandType!: commandTypes;
 
+    constructor(private bricks:Array<Brick>, private readonly i:number){
+        this.commandType = commandTypes.Brick;
     }
 
     execute():void{
-        if(this.i == -1){
-
-        }
-        else{
-            this.blownBrick = this.bricks[this.i];
-            this.bricks.splice(this.i, 1);
-        }
+        this.blownBrick = this.bricks[this.i];
+        this.bricks.splice(this.i, 1);
         this.bricks.forEach(brick => brick.draw());
-        
     }
     undo():void{
         
         this.bricks.splice(this.i, 0, this.blownBrick);
         this.bricks.forEach(brick => brick.draw());
+    }
+
+    getBricks(): Array<Brick> {
+        return this.bricks;
     }
 }

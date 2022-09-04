@@ -5,6 +5,7 @@ import { Ball } from "./Components/ball.js";
 import { BlowBrickCommand, Command, MoveBallCommand, MovePaddle } from "./Command/command.js";
 import {Paddle, leftRight} from "./Components/paddle.js";
 import { Brick } from "./Components/brick.js";
+import { commandTypes } from "./Command/command.js";
 
 var intervalId : any;
 var wait = (ms: number) => {
@@ -18,7 +19,7 @@ function resume() {
     intervalId = setInterval(()=>{
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
         obs.changeState(); // the ball position gets updated and it's redrawn
-        //bricks.forEach(brick => brick.draw());
+        bricks.forEach(brick => brick.draw());
         /** collisions*/
 		/** collision with paddle*/ 
 		if(((ball.x + ball.radius) > paddle.x 
@@ -47,41 +48,45 @@ function resume() {
             {
                 let blowBrick = new BlowBrickCommand(bricks, i);
                 blowBrick.execute();  // draws the leftover bricks
-            	blowBrickCommands.push(blowBrick); 
+            	commands.push(blowBrick); 
+                blowBrick.getBricks().forEach(brick => brick.draw());
                 //bricks.splice(i, 1);
-                console.log(ball.x + " "+ball.y+" "+bricks[i].top)
+                //console.log(ball.x + " "+ball.y+" "+bricks[i].top)
 				
 				ball.vy = -ball.vy;
 			
                 
 				}
-            else{
-                let blowBrick = new BlowBrickCommand(bricks, -1);
-                blowBrick.execute();  // draws the leftover bricks
-            	blowBrickCommands.push(blowBrick);
-            }
+            // else{
+            //     let blowBrick = new BlowBrickCommand(bricks, -1);
+            //     blowBrick.execute();  // draws the leftover bricks
+            // 	commands.push(blowBrick);
+            // }
 		}
         
         let move = new MoveBallCommand(new Ball(gameCanvas, ball.x, ball.y));
         move.execute();
-        ballCommands.push(move);
+        commands.push(move);
 
         if(leftRightActions.length > 0){
-            if(leftRightActions.pop()==leftRight.right && (paddle.x + paddle.width < gameCanvas.width))
-            {
-                paddle.x += paddle.vx;
+            console.log(leftRightActions);
+            for (let c=0; c<leftRightActions.length; c++){
+                if(leftRightActions[c]==leftRight.right && (paddle.x + paddle.width < gameCanvas.width))
+                {
+                    console.log('right cmd');
+                    paddle.x += paddle.vx;
+                }
+                else if(leftRightActions[c]==leftRight.left && (paddle.x >0)){
+                    console.log('left cmd');
+                    paddle.x -= paddle.vx;
+                }
+                let paddleMove = new MovePaddle(new Paddle(gameCanvas,paddle.x));
+                paddleMove.execute();
+                commands.push(paddleMove);
             }
-            else if(leftRightActions.pop()==leftRight.left && (paddle.x - paddle.width >0)){
-                paddle.x -= paddle.vx;
-            }
-                
+            leftRightActions = [];
         }
-
-        
-        let paddleMove = new MovePaddle(new Paddle(gameCanvas,paddle.x));
-        paddleMove.execute();
-        paddleCommands.push(paddleMove);
-    }, 50);
+    }, 100);
 }
 function computeBrickPositions(canvas:HTMLCanvasElement,
     left :number = 80, offset:number = 10,
@@ -117,11 +122,11 @@ window.addEventListener('keydown', (e)=>
     	    break;
 
     	case "ArrowRight": 
-            console.log("move right");
+            //console.log("move right");
             leftRightActions.push(leftRight.right);
     	    break;
     	case "ArrowLeft":
-            console.log("move left");
+            //console.log("move left");
     	    leftRightActions.push(leftRight.left);
     	    break;
         }
@@ -154,20 +159,46 @@ document.getElementById("resume").addEventListener('click', ()=>{
 document.getElementById("undo").addEventListener('click', ()=>{
     gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     //paddle.draw();
-    ballCommands.pop().undo();
-    blowBrickCommands.pop().undo();
-    paddleCommands.pop().undo();
+    let tempBall: Ball = Object.create(ball);
+    let tempBricks: Array<Brick> = Object.create(bricks);
+    let tempPaddle: Paddle = Object.create(paddle);
 
+    switch(commands[commands.length-1].commandType){
+        case commandTypes.Ball:
+            let ballCmd = commands[commands.length-1] as MoveBallCommand;
+            tempBall = ballCmd.getBall();
+
+            tempPaddle.draw();
+            tempBricks.forEach(brick => brick.draw());
+            break;
+
+        case commandTypes.Brick:
+            let brickCmd = commands[commands.length-1] as BlowBrickCommand;
+            tempBricks = brickCmd.getBricks();
+
+            tempBall.draw();
+            tempPaddle.draw();
+            break;
+
+        case commandTypes.Paddle:
+            let paddleCmd = commands[commands.length-1] as MovePaddle;
+            tempPaddle = paddleCmd.getPaddle();
+
+            tempBall.draw();
+            tempBricks.forEach(brick => brick.draw());
+            break;
+    }
+    commands.pop().undo();
 });
 document.getElementById("replay").addEventListener('click', ()=>{
+    console.log('commands:');
+    console.log(commands);
     
-    for(let i=0;i<ballCommands.length;i++)
+    for(let i=0;i<commands.length;i++)
     {
         
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        ballCommands[i].execute();
-        blowBrickCommands[i].execute();
-        paddleCommands[i].execute();
+        commands[i].execute();
         wait(1000);
     }
     
@@ -178,16 +209,19 @@ let clockCanvas : HTMLCanvasElement  = document.getElementById('clock-canvas') a
 let clock : Clock = new Clock(clockCanvas);
 
 let ball : Ball = new Ball(gameCanvas, gameCanvas.width/2, gameCanvas.height/2);
-let ballCommands : Array<Command> = [];
 let paddle : Paddle = new Paddle(gameCanvas, gameCanvas.width/2);
-let paddleCommands :Array<Command> = [];
+
+let bricks:Array<Brick> = computeBrickPositions(gameCanvas);
+bricks.forEach(brick => brick.draw());
+
+let commands: Array<Command> = [];
+//let ballCommands : Array<Command> = [];
+//let paddleCommands :Array<Command> = [];
 
 let obs: Observable = new Observable();
 ball.draw();
 paddle.draw();
-let bricks:Array<Brick> = computeBrickPositions(gameCanvas);
-bricks.forEach(brick => brick.draw());
-let blowBrickCommands : Array<Command> = [];
+//let blowBrickCommands : Array<Command> = [];
 
 clock.update();
 //obs.changeState(); // initial drawing
