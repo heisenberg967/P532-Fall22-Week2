@@ -15,6 +15,7 @@ var wait = (ms) => {
 function resume() {
     intervalId = setInterval(() => {
         let cmdList = new CommandList(gameCanvas);
+        cmdList.commands = [];
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
         obs.changeState(); // the ball position gets updated and it's redrawn
         bricks.forEach(brick => brick.draw());
@@ -38,7 +39,10 @@ function resume() {
                 && (ball.x <= (bricks[i].left + bricks[i].width))
                 && ball.y >= bricks[i].top
                 && ball.y <= (bricks[i].top + bricks[i].height)) {
+                console.log("num bricks outside:");
+                console.log(bricks.length);
                 bricks.splice(i, 1);
+                console.log(bricks.length);
                 blowBrick.setNewBricks(bricks);
                 ball.vy = -ball.vy;
                 brickBlown = true;

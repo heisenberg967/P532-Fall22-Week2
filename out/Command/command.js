@@ -11,9 +11,6 @@ export class ClockTick {
         this.clock.time = this.time;
         this.clock.draw();
     }
-    getTime() {
-        return this.clock;
-    }
 }
 export class MoveBallCommand {
     constructor(ball) {
@@ -36,9 +33,6 @@ export class MoveBallCommand {
         this.ball.y = this.y;
         this.ball.draw();
     }
-    getBall() {
-        return this.ball;
-    }
 }
 export class CommandList {
     constructor(canvas) {
@@ -51,7 +45,7 @@ export class CommandList {
         setInterval(() => this.commands.forEach(command => command.execute()), this.speed);
     }
     undo() {
-        this.commands.forEach(command => command.undo());
+        this.commands.forEach(cmd => cmd.undo());
     }
 }
 export class MovePaddle {
@@ -68,25 +62,24 @@ export class MovePaddle {
         this.paddle.x = this.x;
         this.paddle.draw();
     }
-    getPaddle() {
-        return this.paddle;
-    }
 }
 export class BlowBrickCommand {
     constructor(oldBricks) {
         this.oldBricks = oldBricks;
-        this.newBricks = oldBricks;
+        this.newBricks = [];
+        this.oldBricks.forEach(brick => this.newBricks.push(brick));
     }
     setNewBricks(bricks) {
-        this.newBricks = bricks;
+        this.newBricks = [];
+        bricks.forEach(brick => this.newBricks.push(brick));
+        console.log("num Bricks inside:");
+        console.log(this.oldBricks.length);
+        console.log(this.newBricks.length);
     }
     execute() {
         this.newBricks.forEach(brick => brick.draw());
     }
     undo() {
         this.oldBricks.forEach(brick => brick.draw());
-    }
-    getBricks() {
-        return this.oldBricks;
     }
 }

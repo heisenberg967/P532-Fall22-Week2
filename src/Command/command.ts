@@ -36,9 +36,6 @@ export class ClockTick implements Command{
         this.clock.draw();
     }
 
-    getTime(): Clock {
-        return this.clock;
-    }
 }
 export class MoveBallCommand implements Command{
     private x:number;
@@ -70,9 +67,7 @@ export class MoveBallCommand implements Command{
         this.ball.draw();
     }
 
-    getBall(): Ball {
-        return this.ball;
-    }
+   
 }
 export class CommandList implements Command{
     constructor(private canvas:HTMLCanvasElement){
@@ -87,7 +82,7 @@ export class CommandList implements Command{
         setInterval(()=>this.commands.forEach(command=>command.execute()), this.speed);
     }
     undo(): void {
-        this.commands.forEach(command=>command.undo());
+        this.commands.forEach(cmd=>cmd.undo());
     }
 }
 export class MovePaddle{
@@ -112,20 +107,22 @@ export class MovePaddle{
         this.paddle.draw();
     }
 
-    getPaddle(): Paddle {
-        return this.paddle;
-    }
+  
 }
 export class BlowBrickCommand{
     
     
     private newBricks : Array<Brick>;
     constructor(private oldBricks:Array<Brick>){
-        
-        this.newBricks = oldBricks;
+        this.newBricks = [];
+        this.oldBricks.forEach(brick => this.newBricks.push(brick));
     }
     setNewBricks(bricks:Array<Brick>):void{
-        this.newBricks = bricks;
+        this.newBricks = [];
+        bricks.forEach(brick => this.newBricks.push(brick));
+        console.log("num Bricks inside:");
+        console.log(this.oldBricks.length);
+        console.log(this.newBricks.length);
     }
     execute():void{
         
@@ -136,7 +133,5 @@ export class BlowBrickCommand{
         this.oldBricks.forEach(brick => brick.draw());
     }
 
-    getBricks(): Array<Brick> {
-        return this.oldBricks;
-    }
+    
 }
