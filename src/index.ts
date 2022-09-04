@@ -5,7 +5,8 @@ import { Ball } from "./Components/ball.js";
 import { BlowBrickCommand, Command, MoveBallCommand, MovePaddle } from "./Command/command.js";
 import {Paddle, leftRight} from "./Components/paddle.js";
 import { Brick } from "./Components/brick.js";
-import { commandTypes } from "./Command/command.js";
+import { commandTypes, ClockTick } from "./Command/command.js";
+
 
 var intervalId : any;
 var wait = (ms: number) => {
@@ -67,6 +68,10 @@ function resume() {
         let move = new MoveBallCommand(new Ball(gameCanvas, ball.x, ball.y));
         move.execute();
         commands.push(move);
+
+        let ticker = new ClockTick(clock);
+        ticker.execute();
+        commands.push(ticker)
 
         if(leftRightActions.length > 0){
             console.log(leftRightActions);
@@ -137,10 +142,14 @@ document.getElementById("start").addEventListener('click', ()=>{
     clearInterval(intervalId);
     obs.detach(ball);
     obs.detach(paddle);
+    obs.detach(clock)
+
     ball = new Ball(gameCanvas, gameCanvas.width/2, gameCanvas.height/2);
     paddle = new Paddle(gameCanvas, gameCanvas.width/2);
+    clock = new Clock(clockCanvas);
     bricks = computeBrickPositions(gameCanvas);
     bricks.forEach(brick => brick.draw());
+    obs.attach(clock)
     obs.attach(ball);
     obs.attach(paddle);
     resume();

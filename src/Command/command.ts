@@ -3,6 +3,7 @@ import { Brick } from "../Components/brick.js";
 import { Paddle } from "../Components/paddle.js";
 import {Sprite} from "../Observer/observer.js";
 import { leftRight } from "../Components/paddle.js";
+import { Clock } from "../Observer/clock_observer.js";
 
 export enum commandTypes {
     Ball,
@@ -15,6 +16,26 @@ export interface Command{
     execute() : void;
     undo(): void;
     commandType: commandTypes;
+}
+
+
+export class ClockTick{
+    private time: number;
+    commandType!: commandTypes;
+    constructor(private clock:Clock){
+        this.time = 0;
+        this.commandType = commandTypes.Clock;
+    }
+    execute():void{
+        
+        this.time = this.clock.time;
+        
+        
+    }
+    undo():void{
+        this.clock.time = this.time;
+        
+    }
 }
 export class MoveBallCommand implements Command{
     private x:number;
