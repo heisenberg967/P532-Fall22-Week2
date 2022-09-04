@@ -1,4 +1,4 @@
-import { Sprite } from "../Observer/observer";
+import { Sprite } from "./observer";
 import { MoveBallCommand } from "../Command/command.js";
 import { state } from "../Observable/observable";
 export class Ball implements Sprite{

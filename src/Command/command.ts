@@ -1,9 +1,9 @@
-import { Ball } from "../Components/ball.js";
-import { Brick } from "../Components/brick.js";
-import { Paddle } from "../Components/paddle.js";
+import { Ball } from "../Observer/ball.js";
+import { Brick } from "../Observer/brick.js";
+import { Paddle } from "../Observer/paddle.js";
 import {Sprite} from "../Observer/observer.js";
-import { leftRight } from "../Components/paddle.js";
-import { Clock } from "../Observer/clock_observer.js";
+import { leftRight } from "../Observer/paddle.js";
+import { Clock } from "../Observer/clock.js";
 
 export enum commandTypes {
     Ball,
