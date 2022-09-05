@@ -1,9 +1,11 @@
 import { Sprite } from "../Observer/observer";
+
 export enum state{
     do,
     replay,
     undo
 }
+
 export class Observable{
     private sprites:Array<Sprite> = [];
     changeState():void{

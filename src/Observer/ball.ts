@@ -1,6 +1,5 @@
 import { Sprite } from "./observer";
-import { MoveBallCommand } from "../Command/command.js";
-import { state } from "../Observable/observable";
+
 export class Ball implements Sprite{
     constructor(private readonly canvas:HTMLCanvasElement, x:number, y:number){
         this.x =  x;
@@ -18,20 +17,10 @@ export class Ball implements Sprite{
   radius: number;
   color: string;
   update(): void {
-    console.log('ball update x y');
-    console.log(this.x);
-    console.log(this.y);
       this.x += this.vx;
       this.y += this.vy;
   }
   draw() {
-    
-    // console.log('ball draw x and y and canvas x y:');
-    // console.log(this.x);
-    // console.log(this.y);
-    // console.log(this.canvas.height);
-    // console.log(this.canvas.width);
-
     let ctx : CanvasRenderingContext2D = this.canvas.getContext('2d');
     
     ctx.beginPath();

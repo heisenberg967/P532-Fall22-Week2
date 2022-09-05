@@ -1,5 +1,5 @@
 import {Clock} from "./Observer/clock.js"
-import {Observable, state} from "./Observable/observable.js"
+import {Observable} from "./Observable/observable.js"
 import { Ball } from "./Observer/ball.js";
 import { BlowBrickCommand, Command, MoveBallCommand, MovePaddle } from "./Command/command.js";
 import {Paddle, leftRight} from "./Observer/paddle.js";
@@ -55,32 +55,20 @@ function collisionDetection() {
                 blowBrick.execute();  // draws the leftover bricks
             	commands.push(blowBrick); 
                 blowBrick.getBricks().forEach(brick => brick.draw());
-                //bricks.splice(i, 1);
-                //console.log(ball.x + " "+ball.y+" "+bricks[i].top)
 				
 				ball.vy = -ball.vy;
-			
-                
-				}
-            // else{
-            //     let blowBrick = new BlowBrickCommand(bricks, -1);
-            //     blowBrick.execute();  // draws the leftover bricks
-            // 	commands.push(blowBrick);
-            // }
+            }
 		}
 }
 
 function paddleMovements() {
     if(leftRightActions.length > 0){
-        //console.log(leftRightActions);
         for (let c=0; c<leftRightActions.length; c++){
             if(leftRightActions[c]==leftRight.right && (paddle.x + paddle.width < gameCanvas.width))
             {
-                // console.log('right cmd');
                 paddle.x += paddle.vx;
             }
             else if(leftRightActions[c]==leftRight.left && (paddle.x >0)){
-                // console.log('left cmd');
                 paddle.x -= paddle.vx;
             }
             let paddleMove = new MovePaddle(paddle);
@@ -150,16 +138,13 @@ window.addEventListener('keydown', (e)=>
     	    break;
 
     	case "ArrowRight": 
-            //console.log("move right");
             leftRightActions.push(leftRight.right);
     	    break;
     	case "ArrowLeft":
-            //console.log("move left");
     	    leftRightActions.push(leftRight.left);
     	    break;
         }
 });
-
 
 document.getElementById("start").addEventListener('click', ()=>{
     clearInterval(intervalId);
@@ -179,42 +164,25 @@ document.getElementById("start").addEventListener('click', ()=>{
    
     
 });
+
 document.getElementById("pause").addEventListener('click', ()=>{
     if (intervalId) {
         console.log("pause clicked");
         clearInterval(intervalId);
     }
-    // console.log('in pause')
-    // document.getElementById("pause").innerHTML = "Resume";
-    // document.getElementById("pause").setAttribute("id", "resume");
 });
+
 document.getElementById("resume").addEventListener('click', ()=>{
     clearInterval(intervalId);
-    // console.log('in resume');
-    // document.getElementById("resume").innerHTML = "Pause";
-    // document.getElementById("resume").setAttribute("id", "pause");
     resume();
 });
+
 document.getElementById("undo").addEventListener('click', ()=>{
     gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    //paddle.draw();
-    // let tempBall: Ball = Object.create(ball);
-    // let tempBricks: Array<Brick> = Object.create(bricks);
-    // let tempPaddle: Paddle = Object.create(paddle);
-    // let tempClock: Clock = Object.create(clock);
-    
-    console.log('command type:');
-    console.log(commands[commands.length-1].commandType);
 
     switch(commands[commands.length-1].commandType){
         case commandTypes.Ball:
-
             let ballCmd = commands[commands.length-1] as MoveBallCommand;
-            // tempBall = ballCmd.getBall();
-
-            // tempPaddle.draw();
-            // tempBricks.forEach(brick => brick.draw());
-            // tempClock.draw();
             ball = ballCmd.getBall();
 
             paddle.draw();
@@ -224,11 +192,6 @@ document.getElementById("undo").addEventListener('click', ()=>{
 
         case commandTypes.Brick:
             let brickCmd = commands[commands.length-1] as BlowBrickCommand;
-            // tempBricks = brickCmd.getBricks();
-
-            // tempBall.draw();
-            // tempPaddle.draw();
-            // tempClock.draw();
             bricks = brickCmd.getBricks();
 
             ball.draw();
@@ -238,17 +201,7 @@ document.getElementById("undo").addEventListener('click', ()=>{
 
         case commandTypes.Paddle:
             let paddleCmd = commands[commands.length-1] as MovePaddle;
-            // tempPaddle = paddleCmd.getPaddle();
-            // //console.log('temp x:');
-            // //console.log(tempPaddle.x);
-
-            // tempBall.draw();
-            // tempBricks.forEach(brick => brick.draw());
-            // tempClock.draw();
-
             paddle = paddleCmd.getPaddle();
-            //console.log('temp x:');
-            //console.log(tempPaddle.x);
 
             ball.draw();
             bricks.forEach(brick => brick.draw());
@@ -257,12 +210,6 @@ document.getElementById("undo").addEventListener('click', ()=>{
 
         case commandTypes.Clock:
             let clockCmd = commands[commands.length-1] as ClockTick;
-            // tempClock = clockCmd.getTime();
-
-            // tempBall.draw();
-            // tempPaddle.draw();
-            // tempBricks.forEach(brick => brick.draw());
-
             clock = clockCmd.getTime();
 
             ball.draw();
@@ -272,18 +219,14 @@ document.getElementById("undo").addEventListener('click', ()=>{
     }
     commands.pop().undo();
 });
+
 document.getElementById("replay").addEventListener('click', ()=>{
-    // console.log('commands:');
-    // console.log(commands);
-    
     for(let i=0;i<commands.length;i++)
     {
-        
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
         commands[i].execute();
         wait(1000);
     }
-    
 });
 
 let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -298,20 +241,7 @@ bricks.forEach(brick => brick.draw());
 
 
 let commands: Array<Command> = [];
-//let ballCommands : Array<Command> = [];
-//let paddleCommands :Array<Command> = [];
-
 let obs: Observable = new Observable();
 ball.draw();
 paddle.draw();
-//let blowBrickCommands : Array<Command> = [];
-
 clock.draw();
-//obs.changeState(); // initial drawing
-
-
-//obs.attach(ball);
-// 1st method of changing state - time units
-//setInterval(()=>obs.changeState(gameState), 100);
-// 2nd method of changing state - when mouse is held down
-//gameCanvas.addEventListener('mouseover', (e:MouseEvent)=>obs.changeState(gameState));
