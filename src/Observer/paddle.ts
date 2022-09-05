@@ -1,4 +1,3 @@
-import { state } from "../Observable/observable";
 import { Sprite } from "../Observer/observer";
 
 export enum leftRight{
