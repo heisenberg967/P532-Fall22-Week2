@@ -5,8 +5,8 @@ import { BlowBrickCommand, Command, MoveBallCommand, MovePaddle } from "./Comman
 import {Paddle, leftRight} from "./Observer/paddle.js";
 import { Brick } from "./Observer/brick.js";
 import { commandTypes, ClockTick } from "./Command/command.js";
-
-
+​
+​
 var intervalId : any;
 var wait = (ms: number) => {
     const start = Date.now();
@@ -15,12 +15,12 @@ var wait = (ms: number) => {
       now = Date.now();
     }
 }
-
+​
 function gameOver(){
     alert('Game over!');
     clearInterval(intervalId);
 }
-
+​
 function collisionDetection() {
 		/** collision with paddle*/ 
 		if(((ball.x + ball.radius) > paddle.x 
@@ -35,7 +35,7 @@ function collisionDetection() {
 			 ball.vx = -ball.vx;
 		
 		if((ball.y <= 0)) ball.vy = -ball.vy;
-
+​
         if (ball.y >= gameCanvas.height){
             gameOver();
         }
@@ -69,7 +69,7 @@ function collisionDetection() {
             // }
 		}
 }
-
+​
 function paddleMovements() {
     if(leftRightActions.length > 0){
         //console.log(leftRightActions);
@@ -90,7 +90,7 @@ function paddleMovements() {
         leftRightActions = [];
     }
 }
-
+​
 function resume() {
     intervalId = setInterval(()=>{
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
@@ -107,13 +107,13 @@ function resume() {
         let move = new MoveBallCommand(ball);
         move.execute();
         commands.push(move);
-
+​
         let ticker = new ClockTick(clock);
         ticker.execute();
         commands.push(ticker)
-
+​
         paddleMovements();
-
+​
     }, 100);
 }
 function computeBrickPositions(canvas:HTMLCanvasElement,
@@ -148,7 +148,7 @@ window.addEventListener('keydown', (e)=>
      	case "a": 
             leftRightActions.push(leftRight.left);
     	    break;
-
+​
     	case "ArrowRight": 
             //console.log("move right");
             leftRightActions.push(leftRight.right);
@@ -159,14 +159,16 @@ window.addEventListener('keydown', (e)=>
     	    break;
         }
 });
-
-
+​
+​
 document.getElementById("start").addEventListener('click', ()=>{
+
+    commands = []
     clearInterval(intervalId);
     obs.detach(ball);
     obs.detach(paddle);
     obs.detach(clock)
-
+​
     ball = new Ball(gameCanvas, gameCanvas.width/2, gameCanvas.height/2);
     paddle = new Paddle(gameCanvas, gameCanvas.width/2);
     clock = new Clock(clockCanvas);
@@ -205,66 +207,66 @@ document.getElementById("undo").addEventListener('click', ()=>{
     
     console.log('command type:');
     console.log(commands[commands.length-1].commandType);
-
+​
     switch(commands[commands.length-1].commandType){
         case commandTypes.Ball:
-
+​
             let ballCmd = commands[commands.length-1] as MoveBallCommand;
             // tempBall = ballCmd.getBall();
-
+​
             // tempPaddle.draw();
             // tempBricks.forEach(brick => brick.draw());
             // tempClock.draw();
             ball = ballCmd.getBall();
-
+​
             paddle.draw();
             bricks.forEach(brick => brick.draw());
             clock.draw();
             break;
-
+​
         case commandTypes.Brick:
             let brickCmd = commands[commands.length-1] as BlowBrickCommand;
             // tempBricks = brickCmd.getBricks();
-
+​
             // tempBall.draw();
             // tempPaddle.draw();
             // tempClock.draw();
             bricks = brickCmd.getBricks();
-
+​
             ball.draw();
             paddle.draw();
             clock.draw();
             break;
-
+​
         case commandTypes.Paddle:
             let paddleCmd = commands[commands.length-1] as MovePaddle;
             // tempPaddle = paddleCmd.getPaddle();
             // //console.log('temp x:');
             // //console.log(tempPaddle.x);
-
+​
             // tempBall.draw();
             // tempBricks.forEach(brick => brick.draw());
             // tempClock.draw();
-
+​
             paddle = paddleCmd.getPaddle();
             //console.log('temp x:');
             //console.log(tempPaddle.x);
-
+​
             ball.draw();
             bricks.forEach(brick => brick.draw());
             clock.draw();
             break;
-
+​
         case commandTypes.Clock:
             let clockCmd = commands[commands.length-1] as ClockTick;
             // tempClock = clockCmd.getTime();
-
+​
             // tempBall.draw();
             // tempPaddle.draw();
             // tempBricks.forEach(brick => brick.draw());
-
+​
             clock = clockCmd.getTime();
-
+​
             ball.draw();
             paddle.draw();
             bricks.forEach(brick => brick.draw());
@@ -275,41 +277,124 @@ document.getElementById("undo").addEventListener('click', ()=>{
 document.getElementById("replay").addEventListener('click', ()=>{
     // console.log('commands:');
     // console.log(commands);
-    
-    for(let i=0;i<commands.length;i++)
-    {
-        
+    console.log("start")
+       
+        let intervalId = setInterval(function(){
+            // gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        // commands[i].execute();
         gameCanvas.getContext('2d').clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        commands[i].execute();
-        wait(1000);
-    }
+        ​        let currentCmd = commands.shift()
+                let cmdExecType = currentCmd.commandType
+                if(commands.length == 0){
+                    clearint();
+                }
+                //console.log(commands[i])
+        ​
+                switch(cmdExecType){
+                    case commandTypes.Ball:
+                       let ballVal = currentCmd as MoveBallCommand;
+                        let ballLocUpdate = ballVal.getLocation();
+        ​
+                        ball.x = ballLocUpdate[0];
+                        ball.y = ballLocUpdate[1];
+        ​
+                        let ballMove = new MoveBallCommand(ball);
+                        ballMove.execute();
+                        paddle.draw();
+                        bricks.forEach(brick => brick.draw());
+                        clock.draw();
+                        
+                        break;
+        ​
+                    case commandTypes.Brick:
+                        for(let i = 0; i< bricks.length;i++) {
+                            let brickMove = new BlowBrickCommand(bricks, i);
+                            
+                            let BrickCurVal = currentCmd as BlowBrickCommand;
+                            let brickLocUpdate = BrickCurVal.getBrickLocations()
+                            bricks[i].left = brickLocUpdate[i][0];
+                            bricks[i].top = brickLocUpdate[i][1];
+                            brickMove.execute();
+                            
+                        }
+
+
+                        ball.draw();
+                        paddle.draw();
+                        clock.draw();
+                        break;
+        ​
+                    case commandTypes.Paddle:
+                        let paddleMove = new MovePaddle(paddle);
+                        let paddleCurVal = currentCmd as MovePaddle;
+                        let paddleLocUpdate = paddleCurVal.getLocation();
+        ​                
+                         
+                        paddle.x = paddleLocUpdate;
+                        
+                        
+                        paddleMove.execute();
+                        
+                        ball.draw();
+                        bricks.forEach(brick => brick.draw());
+                        clock.draw();
+                        break;
+        ​
+                    case commandTypes.Clock:
+                        let clockMove = new ClockTick(clock);
+                        let clockCurVal = currentCmd as ClockTick;
+                        let clockUpdate = clockCurVal.getCurrentTime();
+        ​                clock.time = clockUpdate;
+                         
+                        
+                        
+                       
+                        clockMove.execute();
+
+                        paddle.draw();
+                        bricks.forEach(brick => brick.draw());
+                        ball.draw();
+                    break;
+                
+                    }
+            
+        },100)
+
+        
+       function clearint (){
+            clearInterval(intervalId);
+       }
+        
+        
+        
+    
     
 });
-
+​
 let gameCanvas : HTMLCanvasElement  = document.getElementById('game-canvas') as HTMLCanvasElement;
 let clockCanvas : HTMLCanvasElement  = document.getElementById('clock-canvas') as HTMLCanvasElement;
 let clock : Clock = new Clock(clockCanvas);
-
+​
 let ball : Ball = new Ball(gameCanvas, gameCanvas.width/2, gameCanvas.height/2);
 let paddle : Paddle = new Paddle(gameCanvas, gameCanvas.width/2);
-
+​
 let bricks:Array<Brick> = computeBrickPositions(gameCanvas);
 bricks.forEach(brick => brick.draw());
-
-
+​
+​
 let commands: Array<Command> = [];
 //let ballCommands : Array<Command> = [];
 //let paddleCommands :Array<Command> = [];
-
+​
 let obs: Observable = new Observable();
 ball.draw();
 paddle.draw();
 //let blowBrickCommands : Array<Command> = [];
-
+​
 clock.draw();
 //obs.changeState(); // initial drawing
-
-
+​
+​
 //obs.attach(ball);
 // 1st method of changing state - time units
 //setInterval(()=>obs.changeState(gameState), 100);

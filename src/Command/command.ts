@@ -39,6 +39,9 @@ export class ClockTick implements Command{
     getTime(): Clock {
         return this.clock;
     }
+    getCurrentTime(): number{
+        return this.time
+    }
 }
 export class MoveBallCommand implements Command{
     private x:number;
@@ -73,9 +76,14 @@ export class MoveBallCommand implements Command{
     getBall(): Ball {
         return this.ball;
     }
+
+    getLocation(): Array<number> {
+        return new Array(this.x, this.y);
+    }
+
 }
 export class CommandList implements Command{
-    constructor(){
+    cdonstructor(){
         this.commands = [];
     }
     commandType: commandTypes;
@@ -113,6 +121,11 @@ export class MovePaddle{
     getPaddle(): Paddle {
         return this.paddle;
     }
+
+    getLocation(): number {
+        return this.x;
+    }
+    
 }
 export class BlowBrickCommand{
     private blownBrick : Brick;
@@ -135,5 +148,15 @@ export class BlowBrickCommand{
 
     getBricks(): Array<Brick> {
         return this.bricks;
+    }
+
+    getBrickLocations(): Array<Array<number>>{
+        let location = new Array()
+        for(let c = 0; c< this.bricks.length; c++){
+            let curlocation = new Array(this.bricks[c].left,this.bricks[c].top)
+            location.push(curlocation)
+        }
+        return location
+        
     }
 }
